@@ -142,6 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return 'Cannot be empty';
                                 }
+                                return null;
                               },
                               onSaved: (newValue) {
                                 inputEmail = newValue!;
@@ -168,6 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return 'Cannot be empty';
                                 }
+                                return null;
                               },
                               onSaved: (newValue) {
                                 inputPassword = newValue!;

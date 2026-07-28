@@ -1,0 +1,44 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'order_model.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+OrderModel _$OrderModelFromJson(Map<String, dynamic> json) =>
+    OrderModel(
+        id: (json['id'] as num).toInt(),
+        productList: (json['productList'] as List<dynamic>)
+            .map(
+              (e) =>
+                  const ProductConverter().fromJson(e as Map<String, dynamic>),
+            )
+            .toList(),
+        datePlaced: DateTime.parse(json['datePlaced'] as String),
+      )
+      ..dateConfirmed = json['dateConfirmed'] == null
+          ? null
+          : DateTime.parse(json['dateConfirmed'] as String)
+      ..dateShipped = json['dateShipped'] == null
+          ? null
+          : DateTime.parse(json['dateShipped'] as String)
+      ..dateOutForDelivery = json['dateOutForDelivery'] == null
+          ? null
+          : DateTime.parse(json['dateOutForDelivery'] as String)
+      ..dateDelivered = json['dateDelivered'] == null
+          ? null
+          : DateTime.parse(json['dateDelivered'] as String);
+
+Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'productList': instance.productList
+          .map(const ProductConverter().toJson)
+          .toList(),
+      'datePlaced': instance.datePlaced.toIso8601String(),
+      'dateConfirmed': instance.dateConfirmed?.toIso8601String(),
+      'dateShipped': instance.dateShipped?.toIso8601String(),
+      'dateOutForDelivery': instance.dateOutForDelivery?.toIso8601String(),
+      'dateDelivered': instance.dateDelivered?.toIso8601String(),
+    };

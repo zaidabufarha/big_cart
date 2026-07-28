@@ -1,13 +1,8 @@
-import 'package:big_cart/di/injection.dart';
+import 'package:big_cart/core/di/injection.dart';
 import 'package:big_cart/features/auth/presentation/cubit/cubit/auth_cubit.dart';
 import 'package:big_cart/features/auth/presentation/pages/splash_screen.dart';
-import 'package:big_cart/features/buy/presentation/pages/cart_page.dart';
-import 'package:big_cart/features/buy/presentation/pages/review_page.dart';
-import 'package:big_cart/features/buy/presentation/pages/search_page.dart';
-import 'package:big_cart/features/buy/presentation/pages/shipping_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized;

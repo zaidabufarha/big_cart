@@ -1,12 +1,8 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/core/widgets/green_gradient_button.dart';
 import 'package:big_cart/features/account/domain/entities/order.dart';
-import 'package:big_cart/features/account/presentation/widgets/address_card.dart';
 import 'package:big_cart/features/account/presentation/widgets/big_order_progress_indicator.dart';
 import 'package:big_cart/features/account/presentation/widgets/order_card.dart';
-import 'package:big_cart/features/buy/domain/entities/category.dart';
-import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:intl/intl.dart';

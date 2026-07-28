@@ -1,10 +1,8 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/features/account/domain/entities/address.dart';
 import 'package:big_cart/features/account/domain/entities/order.dart';
 import 'package:big_cart/features/account/presentation/pages/track_order_page.dart';
 import 'package:big_cart/features/account/presentation/widgets/order_progress_indicator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:intl/intl.dart';

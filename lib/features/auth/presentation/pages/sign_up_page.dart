@@ -140,6 +140,7 @@ class SignUpPage extends StatelessWidget {
                                 if (value == null || value.isEmpty) {
                                   return 'Cannot be empty';
                                 }
+                                return null;
                               },
                               onSaved: (newValue) {
                                 inputEmail = newValue!;
@@ -164,6 +165,7 @@ class SignUpPage extends StatelessWidget {
                                 if (value == null || value.isEmpty) {
                                   return 'Cannot be empty';
                                 }
+                                return null;
                               },
                               onSaved: (newValue) {
                                 inputPhoneNumber = newValue!;
@@ -190,6 +192,7 @@ class SignUpPage extends StatelessWidget {
                                 if (value == null || value.isEmpty) {
                                   return 'Cannot be empty';
                                 }
+                                return null;
                               },
                               onSaved: (newValue) {
                                 inputPassword = newValue!;

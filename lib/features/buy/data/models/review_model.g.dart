@@ -7,7 +7,7 @@ part of 'review_model.dart';
 // **************************************************************************
 
 ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
-  user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+  user: const UserConverter().fromJson(json['user'] as Map<String, dynamic>),
   content: json['content'] as String,
   rating: (json['rating'] as num).toDouble(),
   timestamp: DateTime.parse(json['timestamp'] as String),
@@ -15,7 +15,7 @@ ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
 
 Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
     <String, dynamic>{
-      'user': instance.user,
+      'user': const UserConverter().toJson(instance.user),
       'timestamp': instance.timestamp.toIso8601String(),
       'rating': instance.rating,
       'content': instance.content,

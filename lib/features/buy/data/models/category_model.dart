@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'category_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(converters: [ColorConverter()])
 class CategoryModel extends Category {
   CategoryModel({
     required super.name,

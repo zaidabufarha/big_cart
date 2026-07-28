@@ -1,14 +1,10 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/core/widgets/green_gradient_button.dart';
 import 'package:big_cart/features/account/domain/entities/user.dart';
-import 'package:big_cart/features/account/presentation/pages/add_credit_card_page.dart';
-import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:big_cart/features/buy/domain/entities/review.dart';
 import 'package:big_cart/features/buy/presentation/pages/add_review_page.dart';
 import 'package:big_cart/features/buy/presentation/widgets/review_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar_plus/flutter_rating_bar_plus.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class ReviewPage extends StatelessWidget {

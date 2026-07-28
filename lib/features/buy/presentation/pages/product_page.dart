@@ -1,12 +1,10 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/core/widgets/green_gradient_button.dart';
 import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:big_cart/features/buy/presentation/widgets/grey_vertical_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar_plus/flutter_rating_bar_plus.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
-import 'package:injectable/injectable.dart';
 
 class ProductPage extends StatelessWidget {
   Product product;

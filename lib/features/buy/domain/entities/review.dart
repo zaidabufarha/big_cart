@@ -1,7 +1,5 @@
 import 'package:big_cart/features/account/domain/entities/user.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-@JsonSerializable()
 class Review {
   User user;
   DateTime timestamp;

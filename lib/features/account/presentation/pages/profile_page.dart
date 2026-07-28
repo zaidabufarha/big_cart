@@ -10,7 +10,6 @@ import 'package:big_cart/features/account/presentation/pages/transactions_page.d
 import 'package:big_cart/features/account/presentation/widgets/profile_page_option.dart';
 import 'package:big_cart/features/buy/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class ProfilePage extends StatelessWidget {

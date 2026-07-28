@@ -14,53 +14,53 @@ class OrderPage extends StatelessWidget {
   OrderPage(this.orderList, {super.key});
   @override
   Widget build(BuildContext context) {
-    orderList.add(
-      Order(
-        id: 23,
-        productList: [
-          Product(
-            name: 'broccoli',
-            imagePath: 'assets/broccoli.png',
-            amount: '3kg',
-            description: 'nice',
-            discount: 43,
-            price: 67,
-            isNew: false,
-            isFavorite: false,
-            category: categoryList[0],
-            color: Colors.green,
-            reviewList: [],
-          ),
-        ],
-        datePlaced: DateTime.now(),
-        dateConfirmed: DateTime.now(),
-      ),
-    );
-    orderList.add(
-      Order(
-        id: 54,
-        productList: [
-          Product(
-            name: 'broccoli',
-            imagePath: 'assets/broccoli.png',
-            amount: '3kg',
-            description: 'nice',
-            discount: 43,
-            price: 67,
-            isNew: false,
-            isFavorite: false,
-            category: categoryList[0],
-            color: Colors.green,
-            reviewList: [],
-          ),
-        ],
-        datePlaced: DateTime.now(),
-        dateConfirmed: DateTime.now(),
-        dateShipped: DateTime.now(),
-        dateOutForDelivery: DateTime.now(),
-        dateDelivered: DateTime.now(),
-      ),
-    );
+    // orderList.add(
+    //   Order(
+    //     id: 23,
+    //     productList: [
+    //       Product(
+    //         name: 'broccoli',
+    //         imagePath: 'assets/broccoli.png',
+    //         amount: '3kg',
+    //         description: 'nice',
+    //         discount: 43,
+    //         price: 67,
+    //         isNew: false,
+    //         isFavorite: false,
+    //         category: categoryList[0],
+    //         color: Colors.green,
+    //         reviewList: [],
+    //       ),
+    //     ],
+    //     datePlaced: DateTime.now(),
+    //     dateConfirmed: DateTime.now(),
+    //   ),
+    // );
+    // orderList.add(
+    //   Order(
+    //     id: 54,
+    //     productList: [
+    //       Product(
+    //         name: 'broccoli',
+    //         imagePath: 'assets/broccoli.png',
+    //         amount: '3kg',
+    //         description: 'nice',
+    //         discount: 43,
+    //         price: 67,
+    //         isNew: false,
+    //         isFavorite: false,
+    //         category: categoryList[0],
+    //         color: Colors.green,
+    //         reviewList: [],
+    //       ),
+    //     ],
+    //     datePlaced: DateTime.now(),
+    //     dateConfirmed: DateTime.now(),
+    //     dateShipped: DateTime.now(),
+    //     dateOutForDelivery: DateTime.now(),
+    //     dateDelivered: DateTime.now(),
+    //   ),
+    // );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.backgroundPrimary,

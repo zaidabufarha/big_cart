@@ -15,9 +15,9 @@ class ShippingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void onClick(int? index) {
-      if (step == 1)
+      if (step == 1) {
         step++;
-      else {
+      } else {
         print('payment screen');
       }
     }

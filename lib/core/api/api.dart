@@ -1,5 +1,3 @@
-import 'package:big_cart/features/account/data/models/user_model.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
@@ -15,7 +13,7 @@ abstract class ApiConsumer {
   });
   Future<dynamic> patch({
     required String path,
-    Map<String, dynamic>? data,
+    required dynamic data,
     Map<String, dynamic>? queryParameters,
   });
   Future<dynamic> delete({required String path});
@@ -45,7 +43,7 @@ class DioConsumer implements ApiConsumer {
   @override
   Future<dynamic> patch({
     required String path,
-    Map<String, dynamic>? data,
+    required dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
     final response = await dio.patch(

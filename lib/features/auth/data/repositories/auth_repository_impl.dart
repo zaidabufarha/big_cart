@@ -30,10 +30,10 @@ class AuthRepositoryImpl implements AuthRepository {
         await authRemoteDataSource.forgotPassword(email: email);
         return Right(unit);
       } on InvalidEmailException {
-        return Left(InvalidEmail());
+        return Left(InvalidEmailFailure());
       }
     } else {
-      return Left(NoInternet());
+      return Left(NoInternetFailure());
     }
   }
 
@@ -52,12 +52,12 @@ class AuthRepositoryImpl implements AuthRepository {
         );
         return Right(user);
       } on InvalidEmailException {
-        return Left(InvalidEmail());
+        return Left(InvalidEmailFailure());
       } on WrongPasswordException {
-        return Left(WrongPassword());
+        return Left(WrongPasswordFailure());
       }
     } else {
-      return Left(NoInternet());
+      return Left(NoInternetFailure());
     }
   }
 
@@ -68,10 +68,10 @@ class AuthRepositoryImpl implements AuthRepository {
         await authRemoteDataSource.sendOtp(number);
         return Right(unit);
       } on InvalidEmailException {
-        return Left(InvalidEmail());
+        return Left(InvalidEmailFailure());
       }
     } else {
-      return Left(NoInternet());
+      return Left(NoInternetFailure());
     }
   }
 
@@ -90,12 +90,12 @@ class AuthRepositoryImpl implements AuthRepository {
         );
         return Right(user);
       } on InvalidEmailException {
-        return Left(InvalidEmail());
+        return Left(InvalidEmailFailure());
       } on InvalidNumberException {
-        return Left(InvalidNumber());
+        return Left(InvalidNumberFailure());
       }
     } else {
-      return Left(NoInternet());
+      return Left(NoInternetFailure());
     }
   }
 
@@ -117,10 +117,10 @@ class AuthRepositoryImpl implements AuthRepository {
         );
         return Right(newUser);
       } on WrongOTPException {
-        return Left(WrongOTP());
+        return Left(WrongOTPFailure());
       }
     } else {
-      return Left(NoInternet());
+      return Left(NoInternetFailure());
     }
   }
 

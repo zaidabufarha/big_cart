@@ -3,22 +3,30 @@ abstract class Failure {
   Failure(this.message);
 }
 
-class WrongPassword extends Failure {
-  WrongPassword([super.message = 'Incorrect password']);
+class WrongPasswordFailure extends Failure {
+  WrongPasswordFailure([super.message = 'Incorrect password']);
 }
 
-class NoInternet extends Failure {
-  NoInternet([super.message = 'Couldn\'t connect to the server']);
+class NoInternetFailure extends Failure {
+  NoInternetFailure([super.message = 'Couldn\'t connect to the server']);
 }
 
-class WrongOTP extends Failure {
-  WrongOTP([super.message = 'Incorrect OTP']);
+class WrongOTPFailure extends Failure {
+  WrongOTPFailure([super.message = 'Incorrect OTP']);
 }
 
-class InvalidEmail extends Failure {
-  InvalidEmail([super.message = 'Email already in use']);
+class InvalidEmailFailure extends Failure {
+  InvalidEmailFailure([super.message = 'Email already in use']);
 }
 
-class InvalidNumber extends Failure {
-  InvalidNumber([super.message = 'Number already in use']);
+class InvalidNumberFailure extends Failure {
+  InvalidNumberFailure([super.message = 'Number already in use']);
 }
+
+class PasswordMismatchFailure extends Failure {
+  PasswordMismatchFailure([super.message = 'Passwords do not match']);
+}
+
+// class ServerFailure extends Failure {
+//   ServerFailure([super.message = 'Something went wrong, try again later']);
+// }

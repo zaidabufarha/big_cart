@@ -1,0 +1,294 @@
+import 'package:big_cart/core/error/exception.dart';
+import 'package:big_cart/core/error/failure.dart';
+import 'package:big_cart/core/network/network_info.dart';
+import 'package:big_cart/features/account/data/data_sources/account_remote_data_source.dart';
+import 'package:big_cart/features/account/data/models/address_model.dart';
+import 'package:big_cart/features/account/data/models/credit_card_model.dart';
+import 'package:big_cart/features/account/domain/entities/address.dart';
+import 'package:big_cart/features/account/domain/entities/credit_card.dart';
+import 'package:big_cart/features/account/domain/entities/notification_preferences.dart';
+import 'package:big_cart/features/account/domain/entities/order.dart';
+import 'package:big_cart/features/account/domain/entities/transaction.dart';
+import 'package:big_cart/features/account/domain/entities/user.dart';
+import 'package:big_cart/features/account/domain/repositories/account_repository.dart';
+import 'package:dartz/dartz.dart' hide Order;
+import 'package:injectable/injectable.dart' hide Order;
+
+@LazySingleton(as: AccountRepository)
+class AccountRepositoryImpl implements AccountRepository {
+  final AccountRemoteDataSource accountRemoteDataSource;
+  final NetworkInfo networkInfo;
+  AccountRepositoryImpl({
+    required this.accountRemoteDataSource,
+    required this.networkInfo,
+  });
+
+  @override
+  Future<Either<Failure, Unit>> addAddress({
+    required String name,
+    required String address,
+    required String city,
+    required String zip,
+    required String country,
+    required String phoneNumber,
+    required bool makeDefault,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await accountRemoteDataSource.addAddress(
+          name: name,
+          address: address,
+          city: city,
+          zip: zip,
+          country: country,
+          phoneNumber: phoneNumber,
+          makeDefault: makeDefault,
+        );
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> addCreditCard({
+    required String name,
+    required String cardNumber,
+    required String expiration,
+    required int ccv,
+    required bool saveCard,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await accountRemoteDataSource.addCreditCard(
+          name: name,
+          cardNumber: cardNumber,
+          expiration: expiration,
+          ccv: ccv,
+          saveCard: saveCard,
+        );
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> addProfilePicture({
+    required String path,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await accountRemoteDataSource.addProfilePicture(path: path);
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Address>>> getAddresses() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getAddresses();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CreditCard>>> getCreditCards() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getCreditCards();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, NotificationPreferences>>
+  getNotificationPreferences() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource
+            .getNotificationPreferences();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Order>> getOrder(int orderId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getOrder(orderId);
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Order>>> getOrders() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getOrders();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Transaction>>> getTransactions() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getTransactions();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> getUserData() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await accountRemoteDataSource.getUserData();
+        return Right(response);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> setNotificationPreferences({
+    required bool allowNotifications,
+    required bool allowEmailNotifications,
+    required bool allowOrderNotifications,
+    required bool allowGeneralNotifications,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await accountRemoteDataSource.setNotificationPreferences(
+          allowNotifications: allowNotifications,
+          allowEmailNotifications: allowEmailNotifications,
+          allowOrderNotifications: allowOrderNotifications,
+          allowGeneralNotifications: allowGeneralNotifications,
+        );
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateAddress(Address address) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final addressModel = AddressModel(
+          name: address.name,
+          address: address.address,
+          city: address.city,
+          country: address.country,
+          number: address.number,
+          zip: address.zip,
+        );
+        await accountRemoteDataSource.updateAddress(addressModel);
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateCreditCard(CreditCard card) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final cardModel = CreditCardModel(
+          name: card.name,
+          cardNumber: card.cardNumber,
+          expiryDate: card.expiryDate,
+          cvv: card.cvv,
+          proccessor: card.proccessor,
+        );
+        await accountRemoteDataSource.updateCreditCard(cardModel);
+        return Right(unit);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateProfile({
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String currentPassword,
+    required String newPassword1,
+    required String newPassword2,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await accountRemoteDataSource.updateProfile(
+          name: name,
+          email: email,
+          phoneNumber: phoneNumber,
+          currentPassword: currentPassword,
+          newPassword1: newPassword1,
+          newPassword2: newPassword2,
+        );
+        return Right(unit);
+      } on WrongPasswordException {
+        return Left(WrongPasswordFailure());
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(NoInternetFailure());
+    }
+  }
+}

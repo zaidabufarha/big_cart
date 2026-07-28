@@ -33,7 +33,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<UserModel?> getCachedUser() async {
-    final userJson = await sharedPreferences.getString('CACHED_USER');
+    final userJson = sharedPreferences.getString('CACHED_USER');
     if (userJson == null) {
       return null;
     } else {
@@ -44,7 +44,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<bool> isFirstTime() async {
-    final response = await sharedPreferences.getBool('FIRST_TIME');
+    final response = sharedPreferences.getBool('FIRST_TIME');
     if (response == null) {
       return true;
     } else {

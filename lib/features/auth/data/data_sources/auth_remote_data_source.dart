@@ -2,7 +2,6 @@ import 'package:big_cart/core/api/api.dart';
 import 'package:big_cart/core/error/exception.dart';
 import 'package:big_cart/features/account/data/models/user_model.dart';
 import 'package:big_cart/features/account/domain/entities/user.dart';
-import 'package:big_cart/features/auth/domain/use%20cases/send_otp.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
@@ -39,7 +38,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Unit> forgotPassword({required String email}) async {
     try {
-      final response = await apiConsumer.post(
+      await apiConsumer.post(
         path: 'password_requests.json',
         data: {'email': email},
       );
@@ -75,7 +74,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Unit> sendOtp(String email) async {
     try {
-      final response = await apiConsumer.post(
+      await apiConsumer.post(
         path: 'otp_requests.json',
         data: {'email': email},
       );

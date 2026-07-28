@@ -11,14 +11,16 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
   imagePath: json['imagePath'] as String,
   amount: json['amount'] as String,
   description: json['description'] as String,
-  discount: (json['discount'] as num).toInt(),
+  discount: (json['discount'] as num).toDouble(),
   price: (json['price'] as num).toDouble(),
   isNew: json['isNew'] as bool,
   isFavorite: json['isFavorite'] as bool,
-  category: CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
+  category: const CategoryConverter().fromJson(
+    json['category'] as Map<String, dynamic>,
+  ),
   color: const ColorConverter().fromJson((json['color'] as num).toInt()),
   reviewList: (json['reviewList'] as List<dynamic>)
-      .map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
+      .map((e) => const ReviewConverter().fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
@@ -28,11 +30,13 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'imagePath': instance.imagePath,
       'amount': instance.amount,
       'description': instance.description,
-      'price': instance.price,
       'discount': instance.discount,
+      'price': instance.price,
       'isNew': instance.isNew,
       'isFavorite': instance.isFavorite,
-      'category': instance.category,
+      'category': const CategoryConverter().toJson(instance.category),
       'color': const ColorConverter().toJson(instance.color),
-      'reviewList': instance.reviewList,
+      'reviewList': instance.reviewList
+          .map(const ReviewConverter().toJson)
+          .toList(),
     };

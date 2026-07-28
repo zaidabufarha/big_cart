@@ -7,11 +7,13 @@ class GreenSwitchListTile extends StatelessWidget {
   String title;
   String subtitle;
   bool isActive;
+  ValueChanged<bool> onChanged;
   GreenSwitchListTile({
     super.key,
     required this.isActive,
     required this.title,
     required this.subtitle,
+    required this.onChanged,
   });
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,8 @@ class GreenSwitchListTile extends StatelessWidget {
             scale: 0.7,
             child: Switch(
               value: isActive,
-              onChanged: (allowNotifications) {},
+              onChanged: onChanged,
+
               thumbColor: WidgetStateProperty.all(
                 Colors.white,
               ),

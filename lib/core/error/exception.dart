@@ -8,4 +8,4 @@ class InvalidEmailException implements Exception {}
 
 class InvalidNumberException implements Exception {}
 
-class ServerFailureException implements Exception {}
+class PasswordMismatchException implements Exception {}
