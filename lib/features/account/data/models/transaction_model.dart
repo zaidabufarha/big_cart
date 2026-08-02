@@ -10,6 +10,12 @@ class TransactionModel extends Transaction {
     required super.proccessor,
   });
 
+  factory TransactionModel.fromEntity(Transaction entity) => TransactionModel(
+        cost: entity.cost,
+        timestamp: entity.timestamp,
+        proccessor: entity.proccessor,
+      );
+
   factory TransactionModel.fromJson(Map<String, dynamic> json) =>
       _$TransactionModelFromJson(json);
 

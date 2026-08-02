@@ -1,16 +1,24 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/core/widgets/green_gradient_button.dart';
+import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar_plus/flutter_rating_bar_plus.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class AddReviewPage extends StatelessWidget {
-  //final formKey = GlobalKey();
-  const AddReviewPage({super.key});
+  final formKey = GlobalKey<FormState>();
+  AddReviewPage(this.id, {super.key});
+  String id;
+  late String review;
+  late double rating;
   @override
   Widget build(BuildContext context) {
-    void onClick(int? index) {}
+    void onClick(int? index) {
+      context.read<ShopCubit>().attemptAddReview(id, review, rating);
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.backgroundPrimary,
@@ -27,77 +35,87 @@ class AddReviewPage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsetsGeometry.all(30),
-              child: Form(
-                //key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 20.h,
+        child: Form(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsetsGeometry.all(30),
+                child: Form(
+                  //key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 20.h,
 
-                  children: [
-                    Text(
-                      'What do you think?',
-                      style: Fonts.titleBold(size: 20),
-                    ),
-                    Text(
-                      'Please rate this product by clicking on the stars below',
-                      textAlign: TextAlign.center,
-                      style: Fonts.paragraphRegular(),
-                    ),
-                    RatingBarIndicator(
-                      rating: 3.6, // from backend
-                      itemCount: 5,
-                      itemSize: 50.w,
-                      itemBuilder: ((context, index) => Icon(
-                        Icons.star,
-                        color: Color(0xFFFFC107),
-                      )),
-                    ),
-                    Stack(
-                      children: [
-                        TextFormField(
-                          maxLines: null,
-                          minLines: 4,
-                          keyboardType: TextInputType.multiline,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.backgroundPrimary,
-                            prefixIcon: Icon(
-                              Icons.edit_outlined,
-                              color: Colors.transparent,
+                    children: [
+                      Text(
+                        'What do you think?',
+                        style: Fonts.titleBold(size: 20),
+                      ),
+                      Text(
+                        'Please rate this product by clicking on the stars below',
+                        textAlign: TextAlign.center,
+                        style: Fonts.paragraphRegular(),
+                      ),
+                      RatingBar.builder(
+                        initialRating: 5,
+                        allowHalfRating: true,
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (newRating) {
+                          rating = newRating;
+                        },
+                      ),
+                      Stack(
+                        children: [
+                          TextFormField(
+                            maxLines: null,
+                            minLines: 4,
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.backgroundPrimary,
+                              prefixIcon: Icon(
+                                Icons.edit_outlined,
+                                color: Colors.transparent,
+                              ),
+                              hint: Text(
+                                'Tell us your experience',
+                                style: Fonts.paragraphRegular(),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
                             ),
-                            hint: Text(
-                              'Tell us your experience',
-                              style: Fonts.paragraphRegular(),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                            validator: (value) =>
+                                (value == null || value.isEmpty)
+                                ? 'Cannot be empty'
+                                : null,
+                            onSaved: (newValue) {},
+                          ),
+
+                          Positioned(
+                            top: 15.h,
+                            left: 15.w,
+                            child: Icon(
+                              Icons.edit,
+                              color: AppColors.textSecondary,
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 15.h,
-                          left: 15.w,
-                          child: Icon(
-                            Icons.edit,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: GreenGradientButton(onClick, 'Submit'),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: GreenGradientButton(onClick, 'Submit'),
+              ),
+            ],
+          ),
         ),
       ),
     );

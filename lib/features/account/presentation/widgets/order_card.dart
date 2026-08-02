@@ -7,23 +7,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:intl/intl.dart';
 
-class OrderCard extends StatelessWidget {
+class OrderCard extends StatefulWidget {
+  final Order order;
+  final bool hasButton;
+  const OrderCard(this.order, {super.key}) : hasButton = true;
+  const OrderCard.noButton(this.order, {super.key}) : hasButton = false;
+
+  @override
+  State<StatefulWidget> createState() {
+    return _OrderCardState();
+  }
+}
+
+class _OrderCardState extends State<OrderCard> {
   final formKey = GlobalKey();
-  bool isClosed;
-  Order order;
-  bool hasButton = true;
-  OrderCard.closed(this.order, {super.key}) : isClosed = true;
-  OrderCard.open(this.order, {super.key}) : isClosed = false;
-  OrderCard.noButton(this.order, {super.key})
-    : isClosed = true,
-      hasButton = false;
+  bool isClosed = true;
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: (context) => TrackOrderPage(order)));
+        ).push(
+          MaterialPageRoute(
+            builder: (context) => TrackOrderPage(
+              widget.order.id!,
+            ), //! because trackorder only works when it's fetched from firebase and tagged with an id
+          ),
+        );
       },
       child: Container(
         width: double.infinity,
@@ -58,11 +69,11 @@ class OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Order #${order.id.toString()}',
+                        'Order #${widget.order.id.toString()}',
                         style: Fonts.titleBold(),
                       ),
                       Text(
-                        'Placed on ${DateFormat('MMM d, y').format(order.datePlaced)}',
+                        'Placed on ${DateFormat('MMM d, y').format(widget.order.datePlaced)}',
                         style: Fonts.paragraphRegular(size: 12),
                       ),
                       Row(
@@ -76,7 +87,8 @@ class OrderCard extends StatelessWidget {
                               ),
                               children: [
                                 TextSpan(
-                                  text: order.productList.length.toString(),
+                                  text: widget.order.productList.length
+                                      .toString(),
                                   style: Fonts.label().copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.textPrimary,
@@ -107,12 +119,16 @@ class OrderCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                (hasButton)
+                (widget.hasButton)
                     ? Transform.rotate(
                         //there is no identical up arrow so I'll just make my own
                         angle: (!isClosed) ? 3.14159 : 0,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              isClosed = !isClosed;
+                            });
+                          },
                           icon: Icon(
                             Icons.arrow_drop_down_circle_outlined,
                             color: AppColors.primaryDark,
@@ -124,7 +140,7 @@ class OrderCard extends StatelessWidget {
               ],
             ),
 
-            (!isClosed || order.dateDelivered != null)
+            (!isClosed || widget.order.dateDelivered != null)
                 ? Divider(
                     thickness: 1.h,
                   )
@@ -155,7 +171,9 @@ class OrderCard extends StatelessWidget {
                               ],
                             ),
                             Text(
-                              DateFormat('MMM d, y').format(order.datePlaced),
+                              DateFormat(
+                                'MMM d, y',
+                              ).format(widget.order.datePlaced),
                               style: Fonts.paragraphRegular(),
                             ),
                           ],
@@ -170,7 +188,8 @@ class OrderCard extends StatelessWidget {
                               spacing: 20.w,
                               children: [
                                 OrderProgressIndicator(
-                                  isActive: (order.dateConfirmed != null),
+                                  isActive:
+                                      (widget.order.dateConfirmed != null),
                                   isFirst: false,
                                 ),
                                 Text(
@@ -180,10 +199,10 @@ class OrderCard extends StatelessWidget {
                               ],
                             ),
                             Text(
-                              (order.dateConfirmed != null)
+                              (widget.order.dateConfirmed != null)
                                   ? DateFormat(
                                       'MMM d, y',
-                                    ).format(order.dateConfirmed!)
+                                    ).format(widget.order.dateConfirmed!)
                                   : 'pending',
                               style: Fonts.paragraphRegular(),
                             ),
@@ -200,7 +219,7 @@ class OrderCard extends StatelessWidget {
                               spacing: 20.w,
                               children: [
                                 OrderProgressIndicator(
-                                  isActive: (order.dateShipped != null),
+                                  isActive: (widget.order.dateShipped != null),
                                   isFirst: false,
                                 ),
                                 Text(
@@ -210,10 +229,10 @@ class OrderCard extends StatelessWidget {
                               ],
                             ),
                             Text(
-                              (order.dateShipped != null)
+                              (widget.order.dateShipped != null)
                                   ? DateFormat(
                                       'MMM d, y',
-                                    ).format(order.dateShipped!)
+                                    ).format(widget.order.dateShipped!)
                                   : 'pending',
                               style: Fonts.paragraphRegular(),
                             ),
@@ -229,7 +248,8 @@ class OrderCard extends StatelessWidget {
                               spacing: 20.w,
                               children: [
                                 OrderProgressIndicator(
-                                  isActive: (order.dateOutForDelivery != null),
+                                  isActive:
+                                      (widget.order.dateOutForDelivery != null),
                                   isFirst: false,
                                 ),
                                 Text(
@@ -239,10 +259,10 @@ class OrderCard extends StatelessWidget {
                               ],
                             ),
                             Text(
-                              (order.dateOutForDelivery != null)
+                              (widget.order.dateOutForDelivery != null)
                                   ? DateFormat(
                                       'MMM d, y',
-                                    ).format(order.dateOutForDelivery!)
+                                    ).format(widget.order.dateOutForDelivery!)
                                   : 'pending',
                               style: Fonts.paragraphRegular(),
                             ),
@@ -258,7 +278,8 @@ class OrderCard extends StatelessWidget {
                               spacing: 20.w,
                               children: [
                                 OrderProgressIndicator(
-                                  isActive: (order.dateDelivered != null),
+                                  isActive:
+                                      (widget.order.dateDelivered != null),
                                   isFirst: false,
                                 ),
                                 Text(
@@ -268,10 +289,10 @@ class OrderCard extends StatelessWidget {
                               ],
                             ),
                             Text(
-                              (order.dateDelivered != null)
+                              (widget.order.dateDelivered != null)
                                   ? DateFormat(
                                       'MMM d, y',
-                                    ).format(order.dateDelivered!)
+                                    ).format(widget.order.dateDelivered!)
                                   : 'pending',
                               style: Fonts.paragraphRegular(),
                             ),
@@ -280,7 +301,7 @@ class OrderCard extends StatelessWidget {
                       ],
                     ),
                   )
-                : (isClosed && order.dateDelivered != null)
+                : (isClosed && widget.order.dateDelivered != null)
                 ? Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
@@ -303,10 +324,10 @@ class OrderCard extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          (order.dateDelivered != null)
+                          (widget.order.dateDelivered != null)
                               ? DateFormat(
                                   'MMM d, y',
-                                ).format(order.dateDelivered!)
+                                ).format(widget.order.dateDelivered!)
                               : 'pending',
                           style: Fonts.paragraphRegular(),
                         ),

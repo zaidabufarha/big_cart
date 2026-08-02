@@ -8,12 +8,22 @@ part 'credit_card_model.g.dart';
 @JsonSerializable(converters: [TransactionConverter()])
 class CreditCardModel extends CreditCard {
   CreditCardModel({
+    super.id,
     required super.name,
     required super.cardNumber,
     required super.expiryDate,
     required super.cvv,
     required super.proccessor,
   });
+
+  factory CreditCardModel.fromEntity(CreditCard entity) => CreditCardModel(
+        id: entity.id,
+        name: entity.name,
+        cardNumber: entity.cardNumber,
+        expiryDate: entity.expiryDate,
+        cvv: entity.cvv,
+        proccessor: entity.proccessor,
+      );
 
   factory CreditCardModel.fromJson(Map<String, dynamic> json) =>
       _$CreditCardModelFromJson(json);

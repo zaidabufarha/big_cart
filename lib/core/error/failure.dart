@@ -27,6 +27,14 @@ class PasswordMismatchFailure extends Failure {
   PasswordMismatchFailure([super.message = 'Passwords do not match']);
 }
 
+class NoDataFailure extends Failure {
+  NoDataFailure([super.message = 'Requested resource not found']);
+}
+
+class EmptyCacheFailure extends Failure {
+  EmptyCacheFailure([super.message = 'User session not found']);
+}
+
 // class ServerFailure extends Failure {
 //   ServerFailure([super.message = 'Something went wrong, try again later']);
 // }

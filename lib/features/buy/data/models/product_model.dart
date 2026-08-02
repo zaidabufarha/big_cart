@@ -10,6 +10,7 @@ part 'product_model.g.dart';
 )
 class ProductModel extends Product {
   ProductModel({
+    required super.id,
     required super.name,
     required super.imagePath,
     required super.amount,
@@ -22,6 +23,21 @@ class ProductModel extends Product {
     required super.color,
     required super.reviewList,
   });
+
+  factory ProductModel.fromEntity(Product entity) => ProductModel(
+        id: entity.id,
+        name: entity.name,
+        imagePath: entity.imagePath,
+        amount: entity.amount,
+        description: entity.description,
+        discount: entity.discount,
+        price: entity.price,
+        isNew: entity.isNew,
+        isFavorite: entity.isFavorite,
+        category: entity.category,
+        color: entity.color,
+        reviewList: entity.reviewList,
+      );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) =>
       _$ProductModelFromJson(json);

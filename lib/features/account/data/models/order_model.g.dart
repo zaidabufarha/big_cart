@@ -8,11 +8,11 @@ part of 'order_model.dart';
 
 OrderModel _$OrderModelFromJson(Map<String, dynamic> json) =>
     OrderModel(
-        id: (json['id'] as num).toInt(),
+        id: (json['id'] as num?)?.toInt(),
         productList: (json['productList'] as List<dynamic>)
             .map(
               (e) =>
-                  const ProductConverter().fromJson(e as Map<String, dynamic>),
+                  const CartItemConverter().fromJson(e as Map<String, dynamic>),
             )
             .toList(),
         datePlaced: DateTime.parse(json['datePlaced'] as String),
@@ -34,7 +34,7 @@ Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'productList': instance.productList
-          .map(const ProductConverter().toJson)
+          .map(const CartItemConverter().toJson)
           .toList(),
       'datePlaced': instance.datePlaced.toIso8601String(),
       'dateConfirmed': instance.dateConfirmed?.toIso8601String(),

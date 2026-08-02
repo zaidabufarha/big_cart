@@ -21,8 +21,9 @@ abstract class AccountRepository {
     required String name,
     required String cardNumber,
     required String expiration,
-    required int ccv,
+    required String cvv,
     required bool saveCard,
+    required paymentProccessor proccessor,
   });
   Future<Either<Failure, Unit>> updateCreditCard(CreditCard card);
 

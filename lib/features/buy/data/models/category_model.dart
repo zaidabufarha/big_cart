@@ -12,6 +12,12 @@ class CategoryModel extends Category {
     required super.color,
   });
 
+  factory CategoryModel.fromEntity(Category entity) => CategoryModel(
+        name: entity.name,
+        imagePath: entity.imagePath,
+        color: entity.color,
+      );
+
   factory CategoryModel.fromJson(Map<String, dynamic> json) =>
       _$CategoryModelFromJson(json);
 

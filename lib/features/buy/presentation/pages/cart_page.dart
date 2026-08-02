@@ -1,37 +1,64 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/core/widgets/green_gradient_button.dart';
-import 'package:big_cart/features/buy/domain/entities/product.dart';
+import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
+import 'package:big_cart/features/buy/presentation/cubit/cubit/cart_cubit.dart';
+import 'package:big_cart/features/buy/presentation/pages/home_page.dart';
+import 'package:big_cart/features/buy/presentation/pages/shipping_page.dart';
 import 'package:big_cart/features/buy/presentation/widgets/cart_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-class CartPage extends StatelessWidget {
-  List<Map<Product, int>> items;
+class CartPage extends StatefulWidget {
   bool favorites = false;
   double subtotal = 0;
   double shipping = 1.5;
-  CartPage(this.items, {super.key});
-  CartPage.favorites(this.items, {super.key}) : favorites = true;
+  CartPage({super.key});
+  CartPage.favorites({super.key}) : favorites = true;
+
+  @override
+  State<StatefulWidget> createState() {
+    return _CartPageState();
+  }
+}
+
+class _CartPageState extends State<CartPage> {
+  List<CartItem> checkOutList = []; // cant pass to onclick
+
+  @override
+  void initState() {
+    context.read<CartCubit>().attemptGetCartItems();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    items.add({productList[1]: 8});
-    items.add({productList[0]: 2});
-    items.add({productList[4]: 13});
-    items.add({productList[3]: 6});
-    items.add({productList[2]: 1});
-    items.add({productList[5]: 3});
+    void onClick(int? index) {
+      if (checkOutList.isNotEmpty) {
+        //context.read<CartCubit>().attemptCheckOut(checkOutList);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ShippingPage(checkOutList)),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: ((context) => HomePage())),
+        );
+      }
+    }
 
-    void onClick(int? index) {}
-    double sumOfPrices(List<Map<Product, int>> items) {
+    double sumOfPrices(List<CartItem> items) {
       double sum = 0;
-      for (Map<Product, int> item in items) {
-        sum += item.keys.first.price * (100 - item.keys.first.discount) / 100;
+      for (CartItem item in items) {
+        sum +=
+            item.product.price *
+            item.quantity *
+            (100 - item.product.discount) /
+            100;
       }
       return sum;
     }
-
-    subtotal = sumOfPrices(items);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,83 +72,169 @@ class CartPage extends StatelessWidget {
 
         centerTitle: true,
         title: Text(
-          (favorites) ? 'Favorites' : 'Shopping Cart',
+          (widget.favorites) ? 'Favorites' : 'Shopping Cart',
           style: Fonts.titleBold(size: 20),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsetsGeometry.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  spacing: 10.h,
-                  children: [
-                    for (Map<Product, int> item in items) CartCard(item),
-                  ],
+      body: BlocConsumer<CartCubit, CartState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            loaded: (products) {
+              checkOutList = products;
+              //updates after the success of anything because loaded is emitted again. always up to date.
+            },
+            error: (message) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    message,
+                    style: Fonts.paragraphMedium().copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: Colors.red,
                 ),
-              ),
-            ),
-          ),
-          (favorites)
-              ? SizedBox()
-              : Container(
-                  padding: const EdgeInsets.all(20),
-                  color: AppColors.backgroundPrimary,
-                  child: Column(
-                    spacing: 10.h,
+              );
+            },
+            success: (message) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    message,
+                    style: Fonts.paragraphMedium().copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: AppColors.primaryDark,
+                ),
+              );
+              context.read<CartCubit>().attemptGetCartItems();
+            },
+          );
+        },
+        builder: (context, state) {
+          return state.maybeWhen(
+            loaded: (products) => (products.isNotEmpty)
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Subtotal',
-                            style: Fonts.paragraphMedium(),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(20),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              spacing: 10.h,
+                              children: [
+                                for (CartItem item in products) CartCard(item),
+                              ],
+                            ),
                           ),
-                          Text(
-                            '\$$subtotal',
-                            style: Fonts.paragraphMedium(),
-                          ),
-                        ],
+                        ),
                       ),
+                      (widget.favorites)
+                          ? SizedBox()
+                          : Container(
+                              padding: const EdgeInsets.all(20),
+                              color: AppColors.backgroundPrimary,
+                              child: Column(
+                                spacing: 10.h,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Subtotal',
+                                        style: Fonts.paragraphMedium(),
+                                      ),
+                                      Text(
+                                        '\$${sumOfPrices(products)}',
+                                        style: Fonts.paragraphMedium(),
+                                      ),
+                                    ],
+                                  ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Shipping charges',
-                            style: Fonts.paragraphMedium(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Shipping charges',
+                                        style: Fonts.paragraphMedium(),
+                                      ),
+                                      Text(
+                                        '\$${widget.shipping}',
+                                        style: Fonts.paragraphMedium(),
+                                      ),
+                                    ],
+                                  ),
+                                  Divider(
+                                    thickness: 1.h,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Total',
+                                        style: Fonts.titleBold(size: 18),
+                                      ),
+                                      Text(
+                                        '\$${sumOfPrices(products) + widget.shipping}',
+                                        style: Fonts.titleBold(size: 18),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(),
+                                  GreenGradientButton(onClick, 'Checkout'),
+                                ],
+                              ),
+                            ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(80),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.shopping_bag_outlined,
+                                  color: AppColors.primaryDark,
+                                  size: 200.r,
+                                ),
+                                Text(
+                                  'Your cart is empty!',
+                                  textAlign: TextAlign.center,
+                                  style: Fonts.titleBold(size: 30),
+                                ),
+                                Text(
+                                  'Add items to your cart to see them here.',
+                                  textAlign: TextAlign.center,
+                                  style: Fonts.paragraphRegular(),
+                                ),
+                              ],
+                            ),
                           ),
-                          Text(
-                            '\$$shipping',
-                            style: Fonts.paragraphMedium(),
-                          ),
-                        ],
+                        ),
                       ),
-                      Divider(
-                        thickness: 1.h,
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: GreenGradientButton(onClick, 'Start shopping'),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total',
-                            style: Fonts.titleBold(size: 18),
-                          ),
-                          Text(
-                            '\$${subtotal + shipping}',
-                            style: Fonts.titleBold(size: 18),
-                          ),
-                        ],
-                      ),
-                      SizedBox(),
-                      GreenGradientButton(onClick, 'Checkout'),
                     ],
                   ),
-                ),
-        ],
+            orElse: () => Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
       ),
     );
   }

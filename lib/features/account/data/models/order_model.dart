@@ -4,13 +4,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order_model.g.dart';
 
-@JsonSerializable(converters: [ProductConverter()])
+@JsonSerializable(converters: [CartItemConverter()])
 class OrderModel extends Order {
   OrderModel({
-    required super.id,
+    super.id,
     required super.productList,
     required super.datePlaced,
   });
+
+  factory OrderModel.fromEntity(Order entity) => OrderModel(
+    id: entity.id,
+    productList: entity.productList,
+    datePlaced: entity.datePlaced,
+  );
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(json);

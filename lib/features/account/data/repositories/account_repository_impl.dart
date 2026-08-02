@@ -45,8 +45,10 @@ class AccountRepositoryImpl implements AccountRepository {
           makeDefault: makeDefault,
         );
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -58,8 +60,9 @@ class AccountRepositoryImpl implements AccountRepository {
     required String name,
     required String cardNumber,
     required String expiration,
-    required int ccv,
+    required String cvv,
     required bool saveCard,
+    required paymentProccessor proccessor,
   }) async {
     if (await networkInfo.isConnected) {
       try {
@@ -67,12 +70,15 @@ class AccountRepositoryImpl implements AccountRepository {
           name: name,
           cardNumber: cardNumber,
           expiration: expiration,
-          ccv: ccv,
+          cvv: cvv,
           saveCard: saveCard,
+          proccessor: proccessor,
         );
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -87,8 +93,10 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         await accountRemoteDataSource.addProfilePicture(path: path);
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -101,8 +109,10 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getAddresses();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -115,8 +125,10 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getCreditCards();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -131,8 +143,10 @@ class AccountRepositoryImpl implements AccountRepository {
         final response = await accountRemoteDataSource
             .getNotificationPreferences();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -145,8 +159,12 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getOrder(orderId);
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoDataException {
+        return Left(NoDataFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -159,8 +177,12 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getOrders();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoDataException {
+        return Left(NoDataFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -173,8 +195,12 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getTransactions();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoDataException {
+        return Left(NoDataFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -187,8 +213,10 @@ class AccountRepositoryImpl implements AccountRepository {
       try {
         final response = await accountRemoteDataSource.getUserData();
         return Right(response);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -205,14 +233,15 @@ class AccountRepositoryImpl implements AccountRepository {
     if (await networkInfo.isConnected) {
       try {
         await accountRemoteDataSource.setNotificationPreferences(
-          allowNotifications: allowNotifications,
           allowEmailNotifications: allowEmailNotifications,
           allowOrderNotifications: allowOrderNotifications,
           allowGeneralNotifications: allowGeneralNotifications,
         );
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -224,6 +253,7 @@ class AccountRepositoryImpl implements AccountRepository {
     if (await networkInfo.isConnected) {
       try {
         final addressModel = AddressModel(
+          id: address.id,
           name: address.name,
           address: address.address,
           city: address.city,
@@ -233,8 +263,10 @@ class AccountRepositoryImpl implements AccountRepository {
         );
         await accountRemoteDataSource.updateAddress(addressModel);
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -246,6 +278,7 @@ class AccountRepositoryImpl implements AccountRepository {
     if (await networkInfo.isConnected) {
       try {
         final cardModel = CreditCardModel(
+          id: card.id,
           name: card.name,
           cardNumber: card.cardNumber,
           expiryDate: card.expiryDate,
@@ -254,8 +287,10 @@ class AccountRepositoryImpl implements AccountRepository {
         );
         await accountRemoteDataSource.updateCreditCard(cardModel);
         return Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());
@@ -284,8 +319,10 @@ class AccountRepositoryImpl implements AccountRepository {
         return Right(unit);
       } on WrongPasswordException {
         return Left(WrongPasswordFailure());
-      } on ServerException {
-        return Left(ServerFailure());
+      } on NoInternetException {
+        return Left(NoInternetFailure());
+      } on EmptyCacheException {
+        return Left(EmptyCacheFailure());
       }
     } else {
       return Left(NoInternetFailure());

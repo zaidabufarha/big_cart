@@ -8,13 +8,25 @@ import 'package:big_cart/features/account/domain/entities/credit_card.dart';
 import 'package:big_cart/features/account/domain/entities/order.dart';
 import 'package:big_cart/features/account/domain/entities/transaction.dart';
 import 'package:big_cart/features/account/domain/entities/user.dart';
+import 'package:big_cart/features/buy/data/models/cart_item_model.dart';
 import 'package:big_cart/features/buy/data/models/category_model.dart';
 import 'package:big_cart/features/buy/data/models/product_model.dart';
 import 'package:big_cart/features/buy/data/models/review_model.dart';
+import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:big_cart/features/buy/domain/entities/category.dart';
 import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:big_cart/features/buy/domain/entities/review.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+class CartItemConverter
+    implements JsonConverter<CartItem, Map<String, dynamic>> {
+  const CartItemConverter();
+  @override
+  CartItem fromJson(Map<String, dynamic> json) => CartItemModel.fromJson(json);
+  @override
+  Map<String, dynamic> toJson(CartItem object) =>
+      (object as CartItemModel).toJson();
+}
 
 class AddressConverter
     implements JsonConverter<Address, Map<String, dynamic>> {

@@ -15,7 +15,9 @@ class OrderSuccessPage extends StatelessWidget {
     void onClick(int? index) {
       Navigator.of(
         context,
-      ).push(MaterialPageRoute(builder: (context) => TrackOrderPage(order)));
+      ).push(
+        MaterialPageRoute(builder: (context) => TrackOrderPage(order.id!)),
+      );
     }
 
     return Scaffold(

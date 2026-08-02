@@ -1,17 +1,17 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/features/buy/domain/entities/product.dart';
+import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CartCard extends StatelessWidget {
-  Map<Product, int> data;
+  CartItem data;
   CartCard(this.data, {super.key});
   @override
   Widget build(BuildContext context) {
     return Slidable(
-      key: ValueKey(data.keys.first.name),
+      key: ValueKey(data.product.name),
       endActionPane: ActionPane(
         extentRatio: 0.2,
         motion: ScrollMotion(),
@@ -40,11 +40,11 @@ class CartCard extends StatelessWidget {
               margin: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: data.keys.first.color,
+                color: data.product.color,
               ),
               child: Center(
                 child: Image.asset(
-                  data.keys.first.imagePath,
+                  data.product.imagePath,
                   width: 100.w,
                   height: 100.h,
                 ),
@@ -55,17 +55,17 @@ class CartCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '\$${data.keys.first.price} x ${data.values.first}',
+                    '\$${data.product.price} x ${data.quantity}',
                     style: Fonts.paragraphMedium().copyWith(
                       color: AppColors.primaryDark,
                     ),
                   ),
                   Text(
-                    data.keys.first.name,
+                    data.product.name,
                     style: Fonts.titleBold(),
                   ),
                   Text(
-                    data.keys.first.amount,
+                    data.product.amount,
                     style: Fonts.paragraphMedium(),
                   ),
                 ],
@@ -81,7 +81,7 @@ class CartCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  data.values.first.toString(),
+                  data.quantity.toString(),
                   style: Fonts.paragraphRegular(),
                 ),
                 IconButton(

@@ -8,7 +8,7 @@ abstract class ApiConsumer {
   });
   Future<dynamic> post({
     required String path,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
   });
   Future<dynamic> patch({
@@ -57,7 +57,7 @@ class DioConsumer implements ApiConsumer {
   @override
   Future<dynamic> post({
     required String path,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
     final response = await dio.post(

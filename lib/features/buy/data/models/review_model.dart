@@ -13,6 +13,13 @@ class ReviewModel extends Review {
     required super.timestamp,
   });
 
+  factory ReviewModel.fromEntity(Review entity) => ReviewModel(
+        user: entity.user,
+        content: entity.content,
+        rating: entity.rating,
+        timestamp: entity.timestamp,
+      );
+
   factory ReviewModel.fromJson(Map<String, dynamic> json) =>
       _$ReviewModelFromJson(json);
 

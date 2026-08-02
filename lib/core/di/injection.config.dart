@@ -12,6 +12,7 @@
 import 'package:big_cart/core/api/api.dart' as _i1010;
 import 'package:big_cart/core/di/injection.dart' as _i967;
 import 'package:big_cart/core/network/network_info.dart' as _i1004;
+import 'package:big_cart/core/session/user_local_data_source.dart' as _i503;
 import 'package:big_cart/features/account/data/data_sources/account_remote_data_source.dart'
     as _i1020;
 import 'package:big_cart/features/account/data/repositories/account_repository_impl.dart'
@@ -46,6 +47,16 @@ import 'package:big_cart/features/account/domain/use_cases/update_credit_card.da
     as _i1051;
 import 'package:big_cart/features/account/domain/use_cases/update_profile.dart'
     as _i134;
+import 'package:big_cart/features/account/presentation/cubit/cubit/cards_cubit.dart'
+    as _i435;
+import 'package:big_cart/features/account/presentation/cubit/cubit/cubit/address_cubit.dart'
+    as _i862;
+import 'package:big_cart/features/account/presentation/cubit/cubit/orders_cubit.dart'
+    as _i194;
+import 'package:big_cart/features/account/presentation/cubit/cubit/transactions_cubit.dart'
+    as _i475;
+import 'package:big_cart/features/account/presentation/cubit/cubit/user_cubit.dart'
+    as _i662;
 import 'package:big_cart/features/auth/data/data_sources/auth_local_data_source.dart'
     as _i793;
 import 'package:big_cart/features/auth/data/data_sources/auth_remote_data_source.dart'
@@ -67,6 +78,36 @@ import 'package:big_cart/features/auth/domain/use%20cases/sign_up.dart'
     as _i357;
 import 'package:big_cart/features/auth/domain/use%20cases/verify_otp.dart'
     as _i210;
+import 'package:big_cart/features/buy/data/data_sources/buy_remote_data_source.dart'
+    as _i325;
+import 'package:big_cart/features/buy/data/repositories/buy_repository_impl.dart'
+    as _i396;
+import 'package:big_cart/features/buy/domain/repositories/buy_repository.dart'
+    as _i72;
+import 'package:big_cart/features/buy/domain/use%20cases/add_review.dart'
+    as _i564;
+import 'package:big_cart/features/buy/domain/use%20cases/add_to_cart.dart'
+    as _i384;
+import 'package:big_cart/features/buy/domain/use%20cases/check_out.dart'
+    as _i316;
+import 'package:big_cart/features/buy/domain/use%20cases/get_cart_items.dart'
+    as _i738;
+import 'package:big_cart/features/buy/domain/use%20cases/get_category_list.dart'
+    as _i410;
+import 'package:big_cart/features/buy/domain/use%20cases/get_product_list.dart'
+    as _i1020;
+import 'package:big_cart/features/buy/domain/use%20cases/get_product_reviews.dart'
+    as _i950;
+import 'package:big_cart/features/buy/domain/use%20cases/remove_from_cart.dart'
+    as _i954;
+import 'package:big_cart/features/buy/domain/use%20cases/toggle_favorite.dart'
+    as _i826;
+import 'package:big_cart/features/buy/domain/use%20cases/update_quantity.dart'
+    as _i513;
+import 'package:big_cart/features/buy/presentation/cubit/cubit/cart_cubit.dart'
+    as _i984;
+import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart'
+    as _i9;
 import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -93,6 +134,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1010.ApiConsumer>(
       () => _i1010.DioConsumer(dio: gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i503.UserLocalDataSource>(
+      () => _i503.UserLocalDataSourceImpl(
+        sharedPreferences: gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.lazySingleton<_i1004.NetworkInfo>(
       () => _i1004.NetworkInfoImpl(
         internetConnectionChecker: gh<_i973.InternetConnectionChecker>(),
@@ -103,20 +149,61 @@ extension GetItInjectableX on _i174.GetIt {
         sharedPreferences: gh<_i460.SharedPreferences>(),
       ),
     );
-    gh.lazySingleton<_i1020.AccountRemoteDataSource>(
-      () => _i1020.AccountRemoteDataSourceImpl(
-        apiConsumer: gh<_i1010.ApiConsumer>(),
-      ),
-    );
     gh.lazySingleton<_i135.AuthRemoteDataSource>(
       () =>
           _i135.AuthRemoteDataSourceImpl(apiConsumer: gh<_i1010.ApiConsumer>()),
+    );
+    gh.lazySingleton<_i325.BuyRemoteDataSource>(
+      () => _i325.BuyRemoteDataSourceImpl(
+        apiConsumer: gh<_i1010.ApiConsumer>(),
+        userLocalDataSource: gh<_i503.UserLocalDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i832.AuthRepository>(
+      () => _i731.AuthRepositoryImpl(
+        authRemoteDataSource: gh<_i135.AuthRemoteDataSource>(),
+        authLocalDataSource: gh<_i793.AuthLocalDataSource>(),
+        networkInfo: gh<_i1004.NetworkInfo>(),
+      ),
+    );
+    gh.lazySingleton<_i1020.AccountRemoteDataSource>(
+      () => _i1020.AccountRemoteDataSourceImpl(
+        apiConsumer: gh<_i1010.ApiConsumer>(),
+        userLocalDataSource: gh<_i503.UserLocalDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i211.ForgotPassword>(
+      () => _i211.ForgotPassword(repository: gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i1036.GetCachedUser>(
+      () => _i1036.GetCachedUser(repository: gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i491.SendOtp>(
+      () => _i491.SendOtp(repository: gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i357.SignUp>(
+      () => _i357.SignUp(repository: gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i210.VerifyOtp>(
+      () => _i210.VerifyOtp(repository: gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i290.CacheUser>(
+      () => _i290.CacheUser(gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i72.BuyRepository>(
+      () => _i396.BuyRepositoryImpl(
+        gh<_i325.BuyRemoteDataSource>(),
+        gh<_i1004.NetworkInfo>(),
+      ),
     );
     gh.lazySingleton<_i62.AccountRepository>(
       () => _i1055.AccountRepositoryImpl(
         accountRemoteDataSource: gh<_i1020.AccountRemoteDataSource>(),
         networkInfo: gh<_i1004.NetworkInfo>(),
       ),
+    );
+    gh.lazySingleton<_i270.LogIn>(
+      () => _i270.LogIn(authRepository: gh<_i832.AuthRepository>()),
     );
     gh.lazySingleton<_i350.AddAddress>(
       () => _i350.AddAddress(accountRepository: gh<_i62.AccountRepository>()),
@@ -174,33 +261,83 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i134.UpdateProfile(accountRepository: gh<_i62.AccountRepository>()),
     );
-    gh.lazySingleton<_i832.AuthRepository>(
-      () => _i731.AuthRepositoryImpl(
-        authRemoteDataSource: gh<_i135.AuthRemoteDataSource>(),
-        authLocalDataSource: gh<_i793.AuthLocalDataSource>(),
-        networkInfo: gh<_i1004.NetworkInfo>(),
+    gh.factory<_i862.AddressCubit>(
+      () => _i862.AddressCubit(
+        gh<_i350.AddAddress>(),
+        gh<_i392.GetAddresses>(),
+        gh<_i141.UpdateAddress>(),
       ),
     );
-    gh.lazySingleton<_i211.ForgotPassword>(
-      () => _i211.ForgotPassword(repository: gh<_i832.AuthRepository>()),
+    gh.factory<_i662.UserCubit>(
+      () => _i662.UserCubit(
+        gh<_i261.AddProfilePicture>(),
+        gh<_i151.GetNotificationPreferences>(),
+        gh<_i605.GetUserData>(),
+        gh<_i783.SetNotificationPreferences>(),
+        gh<_i134.UpdateProfile>(),
+      ),
     );
-    gh.lazySingleton<_i1036.GetCachedUser>(
-      () => _i1036.GetCachedUser(repository: gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i564.AddReview>(
+      () => _i564.AddReview(gh<_i72.BuyRepository>()),
     );
-    gh.lazySingleton<_i491.SendOtp>(
-      () => _i491.SendOtp(repository: gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i384.AddToCart>(
+      () => _i384.AddToCart(gh<_i72.BuyRepository>()),
     );
-    gh.lazySingleton<_i357.SignUp>(
-      () => _i357.SignUp(repository: gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i316.CheckOut>(
+      () => _i316.CheckOut(gh<_i72.BuyRepository>()),
     );
-    gh.lazySingleton<_i210.VerifyOtp>(
-      () => _i210.VerifyOtp(repository: gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i738.GetCartItems>(
+      () => _i738.GetCartItems(gh<_i72.BuyRepository>()),
     );
-    gh.lazySingleton<_i290.CacheUser>(
-      () => _i290.CacheUser(gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i410.GetCategoryList>(
+      () => _i410.GetCategoryList(gh<_i72.BuyRepository>()),
     );
-    gh.lazySingleton<_i270.LogIn>(
-      () => _i270.LogIn(authRepository: gh<_i832.AuthRepository>()),
+    gh.lazySingleton<_i1020.GetProductList>(
+      () => _i1020.GetProductList(gh<_i72.BuyRepository>()),
+    );
+    gh.lazySingleton<_i950.GetProductReviews>(
+      () => _i950.GetProductReviews(gh<_i72.BuyRepository>()),
+    );
+    gh.lazySingleton<_i954.RemoveFromCart>(
+      () => _i954.RemoveFromCart(gh<_i72.BuyRepository>()),
+    );
+    gh.lazySingleton<_i826.ToggleFavorite>(
+      () => _i826.ToggleFavorite(gh<_i72.BuyRepository>()),
+    );
+    gh.lazySingleton<_i513.UpdateQuantity>(
+      () => _i513.UpdateQuantity(gh<_i72.BuyRepository>()),
+    );
+    gh.factory<_i475.TransactionsCubit>(
+      () => _i475.TransactionsCubit(gh<_i526.GetTransactions>()),
+    );
+    gh.factory<_i984.CartCubit>(
+      () => _i984.CartCubit(
+        gh<_i384.AddToCart>(),
+        gh<_i316.CheckOut>(),
+        gh<_i738.GetCartItems>(),
+        gh<_i954.RemoveFromCart>(),
+        gh<_i513.UpdateQuantity>(),
+      ),
+    );
+    gh.factory<_i435.CardsCubit>(
+      () => _i435.CardsCubit(
+        gh<_i886.AddCreditCard>(),
+        gh<_i600.GetCreditCards>(),
+        gh<_i1051.UpdateCreditCard>(),
+      ),
+    );
+    gh.factory<_i194.OrdersCubit>(
+      () => _i194.OrdersCubit(gh<_i296.GetOrder>(), gh<_i856.GetOrders>()),
+    );
+    gh.factory<_i9.ShopCubit>(
+      () => _i9.ShopCubit(
+        gh<_i564.AddReview>(),
+        gh<_i410.GetCategoryList>(),
+        gh<_i1020.GetProductList>(),
+        gh<_i950.GetProductReviews>(),
+        gh<_i826.ToggleFavorite>(),
+        gh<_i1036.GetCachedUser>(),
+      ),
     );
     return this;
   }

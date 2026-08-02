@@ -10,6 +10,14 @@ class NotificationPreferencesModel extends NotificationPreferences {
     required super.allowGeneral,
     required super.allowOrder,
   });
+  factory NotificationPreferencesModel.fromEntity(
+          NotificationPreferences entity) =>
+      NotificationPreferencesModel(
+        allowEmail: entity.allowEmail,
+        allowGeneral: entity.allowGeneral,
+        allowOrder: entity.allowOrder,
+      );
+
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationPreferencesModelFromJson(json);
 

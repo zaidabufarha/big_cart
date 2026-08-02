@@ -27,6 +27,19 @@ class UserModel extends User {
     super.transactionList = const [],
   });
 
+  factory UserModel.fromEntity(User entity) => UserModel(
+        name: entity.name,
+        email: entity.email,
+        number: entity.number,
+        password: entity.password,
+        imagePath: entity.imagePath,
+        defaultAddress: entity.defaultAddress,
+        creditCardList: entity.creditCardList,
+        addressList: entity.addressList,
+        orderList: entity.orderList,
+        transactionList: entity.transactionList,
+      );
+
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 

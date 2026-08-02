@@ -5,13 +5,35 @@ import 'package:big_cart/features/account/domain/entities/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-class CreditCardCard extends StatelessWidget {
-  final formKey = GlobalKey();
-  bool isDefault = true;
-  bool isClosed;
-  CreditCard card;
-  CreditCardCard.closed(this.card, {super.key}) : isClosed = true;
-  CreditCardCard.open(this.card, {super.key}) : isClosed = false;
+class CreditCardCard extends StatefulWidget {
+  final CreditCard card;
+  final Function(CreditCard updatedCard) onChanged;
+  const CreditCardCard(this.card, this.onChanged, {super.key});
+
+  @override
+  State<CreditCardCard> createState() => _CreditCardCardState();
+}
+
+class _CreditCardCardState extends State<CreditCardCard> {
+  late bool isDefault;
+  bool isClosed = true;
+
+  late String name;
+  late String cardNumber;
+  late String expiration;
+  late String cvv;
+
+  @override
+  void initState() {
+    isDefault = widget.card.isDefault;
+    name = widget.card.name;
+    cardNumber = widget.card.cardNumber;
+    expiration = widget.card.expiryDate;
+    cvv = widget.card.cvv;
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,9 +70,9 @@ class CreditCardCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
-                        (card.proccessor == paymentProccessor.mastercard)
+                        (widget.card.proccessor == paymentProccessor.mastercard)
                             ? 'assets/mastercard.png'
-                            : (card.proccessor == paymentProccessor.visa)
+                            : (widget.card.proccessor == paymentProccessor.visa)
                             ? 'assets/visa.png'
                             : 'assets/paypal.png',
                       ),
@@ -65,13 +87,13 @@ class CreditCardCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      (card.proccessor == paymentProccessor.mastercard)
+                      (widget.card.proccessor == paymentProccessor.mastercard)
                           ? 'Master Card'
                           : 'Visa', //no paypal card because it's external
                       style: Fonts.titleBold(),
                     ),
                     Text(
-                      card.cardNumber,
+                      widget.card.cardNumber,
                       style: Fonts.paragraphRegular(size: 12),
                     ),
                     Row(
@@ -85,7 +107,7 @@ class CreditCardCard extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: card.expiryDate,
+                                text: widget.card.expiryDate,
                                 style: Fonts.label().copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
@@ -96,13 +118,13 @@ class CreditCardCard extends StatelessWidget {
                         ),
                         Text.rich(
                           TextSpan(
-                            text: 'CCV: ',
+                            text: 'CVV: ',
                             style: Fonts.label().copyWith(
                               color: AppColors.textPrimary,
                             ),
                             children: [
                               TextSpan(
-                                text: card.cvv,
+                                text: widget.card.cvv,
                                 style: Fonts.label().copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
@@ -120,7 +142,11 @@ class CreditCardCard extends StatelessWidget {
                 //there is no identical up arrow so I'll just make my own
                 angle: (!isClosed) ? 3.14159 : 0,
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      isClosed = !isClosed;
+                    });
+                  },
                   icon: Icon(
                     Icons.arrow_drop_down_circle_outlined,
                     color: AppColors.primaryDark,
@@ -137,126 +163,226 @@ class CreditCardCard extends StatelessWidget {
               : SizedBox(),
 
           (!isClosed)
-              ? Form(
-                  key: formKey,
-
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      spacing: 5.h,
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.backgroundSecondary,
-                            prefixIcon: Icon(
-                              Icons.person_outline,
-                              color: AppColors.textSecondary,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            hint: Text(
-                              'Russel Austin',
-                              style: Fonts.paragraphRegular(),
-                            ),
+              ? Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    spacing: 5.h,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.backgroundSecondary,
+                          prefixIcon: Icon(
+                            Icons.person_outline,
+                            color: AppColors.textSecondary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          hint: Text(
+                            'Russel Austin',
+                            style: Fonts.paragraphRegular(),
                           ),
                         ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.backgroundSecondary,
-                            prefixIcon: Icon(
-                              Icons.credit_card_outlined,
-                              color: AppColors.textSecondary,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Cannot be empty';
+                          } else {
+                            return null;
+                          }
+                        },
+                        onSaved: (newValue) {
+                          name = newValue!;
+                          widget.onChanged(
+                            CreditCard(
+                              name: name,
+                              cardNumber: cardNumber,
+                              expiryDate: expiration,
+                              cvv: cvv,
+                              proccessor: (cardNumber.startsWith('4'))
+                                  ? paymentProccessor.visa
+                                  : paymentProccessor.mastercard,
+                              id: widget.card.id,
                             ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            hint: Text(
-                              'XXXX XXXX XXXX 5678',
-                              style: Fonts.paragraphRegular(),
-                            ),
+                          );
+                        },
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.backgroundSecondary,
+                          prefixIcon: Icon(
+                            Icons.credit_card_outlined,
+                            color: AppColors.textSecondary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          hint: Text(
+                            'XXXX XXXX XXXX 5678',
+                            style: Fonts.paragraphRegular(),
                           ),
                         ),
-                        Row(
-                          spacing: 10.w,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: AppColors.backgroundSecondary,
-                                  prefixIcon: Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  hint: Text(
-                                    '01/22',
-                                    style: Fonts.paragraphRegular(),
-                                  ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Cannot be empty';
+                          } else {
+                            return null;
+                          }
+                        },
+                        onSaved: (newValue) {
+                          cardNumber = newValue!;
+                          widget.onChanged(
+                            CreditCard(
+                              name: name,
+                              cardNumber: cardNumber,
+                              expiryDate: expiration,
+                              cvv: cvv,
+                              proccessor: (cardNumber.startsWith('4'))
+                                  ? paymentProccessor.visa
+                                  : paymentProccessor.mastercard,
+                              id: widget.card.id,
+                            ),
+                          );
+                        },
+                      ),
+                      Row(
+                        spacing: 10.w,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.backgroundSecondary,
+                                prefixIcon: Icon(
+                                  Icons.calendar_today_outlined,
+                                  color: AppColors.textSecondary,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                hint: Text(
+                                  '01/22',
+                                  style: Fonts.paragraphRegular(),
                                 ),
                               ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Cannot be empty';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              onSaved: (newValue) {
+                                expiration = newValue!;
+                                widget.onChanged(
+                                  CreditCard(
+                                    name: name,
+                                    cardNumber: cardNumber,
+                                    expiryDate: expiration,
+                                    cvv: cvv,
+                                    proccessor: (cardNumber.startsWith('4'))
+                                        ? paymentProccessor.visa
+                                        : paymentProccessor.mastercard,
+                                    id: widget.card.id,
+                                  ),
+                                );
+                              },
                             ),
-                            Expanded(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: AppColors.backgroundSecondary,
-                                  prefixIcon: Icon(
-                                    Icons.lock_outline,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  hint: Text(
-                                    '908',
-                                    style: Fonts.paragraphRegular(),
-                                  ),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.backgroundSecondary,
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: AppColors.textSecondary,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                hint: Text(
+                                  '908',
+                                  style: Fonts.paragraphRegular(),
                                 ),
                               ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Cannot be empty';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              onSaved: (newValue) {
+                                cvv = newValue!;
+                                widget.onChanged(
+                                  CreditCard(
+                                    name: name,
+                                    cardNumber: cardNumber,
+                                    expiryDate: expiration,
+                                    cvv: cvv,
+                                    proccessor: (cardNumber.startsWith('4'))
+                                        ? paymentProccessor.visa
+                                        : paymentProccessor.mastercard,
+                                    id: widget.card.id,
+                                  ),
+                                );
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Transform.scale(
-                                alignment: Alignment.centerLeft,
-                                scale: 0.8,
-                                child: SwitchListTile(
-                                  value: isDefault,
-                                  title: Text(
-                                    'Make default',
-                                    style: Fonts.titleBold(),
-                                  ),
-                                  contentPadding: EdgeInsets.all(0),
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  thumbColor: WidgetStateProperty.all(
-                                    Colors.white,
-                                  ),
-                                  trackColor: WidgetStateProperty.all(
-                                    AppColors.primaryDark,
-                                  ),
-                                  dense: true,
-                                  visualDensity: VisualDensity.compact,
-                                  trackOutlineColor:
-                                      WidgetStateColor.transparent,
-                                  onChanged: (isDefault) {},
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Transform.scale(
+                              alignment: Alignment.centerLeft,
+                              scale: 0.8,
+                              child: SwitchListTile(
+                                value: isDefault,
+                                title: Text(
+                                  'Make default',
+                                  style: Fonts.titleBold(),
                                 ),
+                                contentPadding: EdgeInsets.all(0),
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                thumbColor: WidgetStateProperty.all(
+                                  Colors.white,
+                                ),
+                                trackColor: WidgetStateProperty.all(
+                                  AppColors.primaryDark,
+                                ),
+                                dense: true,
+                                visualDensity: VisualDensity.compact,
+                                trackOutlineColor: WidgetStateColor.transparent,
+                                onChanged: (val) {
+                                  setState(() {
+                                    isDefault = val;
+                                  });
+                                  widget.onChanged(
+                                    CreditCard(
+                                      name: name,
+                                      cardNumber: cardNumber,
+                                      expiryDate: expiration,
+                                      cvv: cvv,
+                                      proccessor: (cardNumber.startsWith('4'))
+                                          ? paymentProccessor.visa
+                                          : paymentProccessor.mastercard,
+                                      id: widget.card.id,
+                                      isDefault: val,
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 )
               : SizedBox(),

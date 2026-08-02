@@ -4,7 +4,6 @@ import 'package:big_cart/features/auth/presentation/cubit/cubit/auth_cubit.dart'
 import 'package:big_cart/features/auth/presentation/pages/login_page.dart';
 import 'package:big_cart/core/widgets/green_gradient_button.dart';
 import 'package:big_cart/features/auth/presentation/pages/verify_number_page.dart';
-import 'package:big_cart/features/buy/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';

@@ -1,9 +1,6 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
-import 'package:big_cart/features/buy/domain/entities/category.dart';
-import 'package:big_cart/features/buy/domain/entities/product.dart';
-import 'package:big_cart/features/buy/presentation/widgets/category_icon.dart';
-import 'package:big_cart/features/buy/presentation/widgets/product_list.dart';
+import 'package:big_cart/features/buy/presentation/pages/category_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
@@ -45,6 +42,15 @@ class SearchPage extends StatelessWidget {
                 IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
                 Expanded(
                   child: TextField(
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (value) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: ((context) => CategoryPage.search(value)),
+                        ),
+                      );
+                    },
                     decoration: InputDecoration(
                       fillColor: AppColors.backgroundSecondary,
                       filled: true,
