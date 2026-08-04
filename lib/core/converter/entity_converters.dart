@@ -102,5 +102,6 @@ class UserConverter implements JsonConverter<User, Map<String, dynamic>> {
   @override
   User fromJson(Map<String, dynamic> json) => UserModel.fromJson(json);
   @override
-  Map<String, dynamic> toJson(User object) => (object as UserModel).toJson();
+  Map<String, dynamic> toJson(User object) =>
+      UserModel.fromEntity(object).toJson();
 }

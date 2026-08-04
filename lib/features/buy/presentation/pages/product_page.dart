@@ -4,6 +4,8 @@ import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:big_cart/features/buy/presentation/cubit/cubit/cart_cubit.dart';
 import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart';
+import 'package:big_cart/features/buy/presentation/pages/add_review_page.dart';
+import 'package:big_cart/features/buy/presentation/pages/review_page.dart';
 import 'package:big_cart/features/buy/presentation/widgets/grey_vertical_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,9 +25,10 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   int quantity = 1;
   late bool isFavorite;
-
+  late Product product;
   @override
   void initState() {
+    product = widget.product;
     isFavorite = widget.product.isFavorite;
     super.initState();
   }
@@ -33,12 +36,12 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     double sumOfRatings = 0;
-    for (int i = 0; i < widget.product.reviewList.length; i++) {
-      sumOfRatings += widget.product.reviewList[i].rating;
+    for (int i = 0; i < product.reviewList.length; i++) {
+      sumOfRatings += product.reviewList[i].rating;
     }
     double averageRating = -1;
-    if (widget.product.reviewList.isNotEmpty) {
-      averageRating = sumOfRatings / widget.product.reviewList.length;
+    if (product.reviewList.isNotEmpty) {
+      averageRating = sumOfRatings / product.reviewList.length;
     }
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -60,6 +63,15 @@ class _ProductPageState extends State<ProductPage> {
           BlocListener<ShopCubit, ShopState>(
             listener: (context, state) {
               state.whenOrNull(
+                loadedProducts: (products) {
+                  //we want to get the product without needing to pop to home
+                  setState(() {
+                    product = products.firstWhere(
+                      (product) => product.id == widget.product.id,
+                      orElse: () => widget.product,
+                    );
+                  });
+                },
                 error: (message) {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +150,7 @@ class _ProductPageState extends State<ProductPage> {
                     bottom: 370.h,
                     top: 0,
                     child: Image.asset(
-                      widget.product.imagePath,
+                      product.imagePath,
                       fit: BoxFit.scaleDown,
                     ),
                   ),
@@ -148,7 +160,7 @@ class _ProductPageState extends State<ProductPage> {
                     height: 420.h,
                     bottom: 0.h,
                     child: Container(
-                      padding: EdgeInsets.all(10.r),
+                      padding: EdgeInsets.all(20.r),
                       decoration: BoxDecoration(
                         color: AppColors.backgroundSecondary,
                         borderRadius: BorderRadius.only(
@@ -166,7 +178,7 @@ class _ProductPageState extends State<ProductPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '\$${widget.product.price.toStringAsFixed(2)}',
+                                '\$${product.price.toStringAsFixed(2)}',
                                 style: Fonts.titleBold(size: 25).copyWith(
                                   color: AppColors.primaryDark,
                                 ),
@@ -179,7 +191,7 @@ class _ProductPageState extends State<ProductPage> {
                                   context
                                       .read<ShopCubit>()
                                       .attemptToggleFavorite(
-                                        widget.product.id,
+                                        product.id,
                                         !isFavorite,
                                       );
                                 },
@@ -195,43 +207,69 @@ class _ProductPageState extends State<ProductPage> {
                             ],
                           ),
                           Text(
-                            widget.product.name,
+                            product.name,
                             style: Fonts.titleBold(
                               size: 30,
                             ).copyWith(color: AppColors.textPrimary),
                           ),
                           Text(
-                            widget.product.amount,
+                            product.amount,
                             style: Fonts.paragraphRegular(),
                           ),
                           (averageRating != -1)
-                              ? Row(
-                                  spacing: 5.w,
-                                  children: [
-                                    Text(
-                                      averageRating.toString(),
-                                      style: Fonts.paragraphRegular().copyWith(
-                                        color: Colors.black,
+                              ? InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ReviewPage(product),
                                       ),
-                                    ),
-                                    RatingBarIndicator(
-                                      rating: averageRating,
-                                      itemCount: 5,
-                                      itemSize: 30.w,
-                                      itemBuilder: ((context, index) => Icon(
-                                        Icons.star,
-                                        color: Color(0xFFFFC107),
-                                      )),
-                                    ),
-                                    Text(
-                                      '(${widget.product.reviewList.length.toString()} review ${(widget.product.reviewList.length > 1) ? 's)' : ')'}',
-                                      style: Fonts.paragraphRegular(),
-                                    ),
-                                  ],
+                                    );
+                                  },
+                                  child: Row(
+                                    spacing: 5.w,
+                                    children: [
+                                      Text(
+                                        averageRating.toStringAsFixed(1),
+                                        style: Fonts.paragraphRegular()
+                                            .copyWith(
+                                              color: Colors.black,
+                                            ),
+                                      ),
+                                      RatingBarIndicator(
+                                        rating: averageRating,
+                                        itemCount: 5,
+                                        itemSize: 30.w,
+                                        itemBuilder: ((context, index) => Icon(
+                                          Icons.star,
+                                          color: Color(0xFFFFC107),
+                                        )),
+                                      ),
+                                      Text(
+                                        '(${product.reviewList.length.toString()} review${(product.reviewList.length > 1) ? 's)' : ')'}',
+                                        style: Fonts.paragraphRegular(),
+                                      ),
+                                    ],
+                                  ),
                                 )
-                              : SizedBox(),
+                              : TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddReviewPage(product.id),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'No reviews yet. Add your own?',
+                                    style: Fonts.paragraphRegular().copyWith(
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
                           Text(
-                            widget.product.description,
+                            product.description,
                             maxLines: 5,
                             style: Fonts.paragraphRegular(),
                           ),
@@ -308,7 +346,7 @@ class _ProductPageState extends State<ProductPage> {
                             child: TextButton(
                               onPressed: () {
                                 final newItem = CartItem(
-                                  widget.product,
+                                  product,
                                   quantity,
                                 );
                                 context.read<CartCubit>().attemptAddToCart(

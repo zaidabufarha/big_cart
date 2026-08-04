@@ -55,7 +55,7 @@ class BuyRemoteDataSourceImpl implements BuyRemoteDataSource {
   @override
   Future<Unit> addReview(String id, ReviewModel review) async {
     try {
-      final path = await _getUserPath('products/$id/reviews.json');
+      final path = 'products/$id/reviews.json';
       await apiConsumer.post(path: path, data: review.toJson());
       return unit;
     } on DioException {
@@ -179,14 +179,17 @@ class BuyRemoteDataSourceImpl implements BuyRemoteDataSource {
   Future<List<ReviewModel>> getProductReviews(String id) async {
     try {
       final response = await apiConsumer.get(
-        path: 'products/$id.json',
+        path: 'products/$id/reviews.json',
       );
       if (response.data == null) {
-        throw NoDataException();
+        return [];
       }
       List<ReviewModel> list = [];
-      for (dynamic value in response.data.values) {
-        list.add(ReviewModel.fromJson(value));
+      if (response.data is Map) {
+        // not empty
+        for (dynamic value in (response.data as Map).values) {
+          list.add(ReviewModel.fromJson(value as Map<String, dynamic>));
+        }
       }
       return list;
     } on DioException {

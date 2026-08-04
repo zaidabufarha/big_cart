@@ -170,14 +170,16 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
 
   @override
   Future<void> addProfilePicture({required String path}) async {
-    //to send a file i used multipartfile
-
     final userPath = await _getUserPath('user_details.json');
     try {
+      final response = await apiConsumer.get(path: userPath);
+      UserModel user = UserModel.fromJson(response.data);
+      user.imagePath = path;
       await apiConsumer.patch(
         path: userPath,
         data: {'imagePath': path},
       );
+      await userLocalDataSource.cacheUser(user);
     } on DioException {
       throw NoInternetException();
     }
@@ -373,15 +375,25 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
         newPassword1 = tempUser.password;
       }
 
+      final updatedUser = UserModel(
+        name: name,
+        email: email,
+        number: phoneNumber,
+        password: newPassword1!,
+        imagePath: tempUser.imagePath,
+        defaultAddress: tempUser.defaultAddress,
+        creditCardList: tempUser.creditCardList,
+        addressList: tempUser.addressList,
+        orderList: tempUser.orderList,
+        transactionList: tempUser.transactionList,
+      );
+
       await apiConsumer.patch(
         path: userPath,
-        data: {
-          'name': name,
-          'email': email,
-          'number': phoneNumber,
-          'password': newPassword1!,
-        },
+        data: updatedUser.toJson(),
       );
+
+      await userLocalDataSource.cacheUser(updatedUser);
     } on DioException {
       throw NoInternetException();
     }

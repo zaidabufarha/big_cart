@@ -114,13 +114,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
               },
-              labelPadding: EdgeInsets.only(top: 40),
-              height: 30.h,
-              // i "show" the labels so i can push the icons up. not visible which is what i want
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              labelTextStyle: WidgetStateProperty.all(
-                TextStyle(fontSize: 1.sp),
-              ),
+              height: 60.h,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               backgroundColor: Colors.white,
               indicatorColor: Colors.transparent,
               destinations: [
@@ -199,13 +194,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 FloatingActionButtonLocation.endDocked,
 
             bottomNavigationBar: NavigationBar(
-              labelPadding: EdgeInsets.only(top: 40),
-              height: 30.h,
-              // i "show" the labels so i can push the icons up. not visible which is what i want
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              labelTextStyle: WidgetStateProperty.all(
-                TextStyle(fontSize: 1.sp),
-              ),
+              height: 60.h,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               backgroundColor: Colors.white,
               indicatorColor: Colors.transparent,
               destinations: [
@@ -316,13 +306,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
               },
-              labelPadding: EdgeInsets.only(top: 40),
-              height: 30.h,
-              // i "show" the labels so i can push the icons up. not visible which is what i want
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              labelTextStyle: WidgetStateProperty.all(
-                TextStyle(fontSize: 1.sp),
-              ),
+              height: 50.h,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               backgroundColor: Colors.white,
               indicatorColor: Colors.transparent,
               destinations: [

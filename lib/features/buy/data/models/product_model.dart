@@ -40,6 +40,10 @@ class ProductModel extends Product {
   );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    //not map when empty
+    if (json['reviews'] is Map) {
+      json['reviewList'] = (json['reviews'] as Map).values.toList();
+    }
     json['reviewList'] ??= [];
     return _$ProductModelFromJson(json);
   }

@@ -3,6 +3,7 @@ import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/features/buy/domain/entities/category.dart';
 import 'package:big_cart/features/buy/domain/entities/product.dart';
 import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart';
+import 'package:big_cart/features/buy/presentation/pages/filter_page.dart';
 import 'package:big_cart/features/buy/presentation/widgets/product_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +42,12 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              print('filter clicked');
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: ((context) => FilterPage())));
+            },
             icon: Icon(
               Icons.tune,
               color: Colors.black,

@@ -32,21 +32,27 @@ class ShopCubit extends Cubit<ShopState> {
   GetCachedUser getCachedUser;
 
   void attemptAddReview(String id, String content, double rating) async {
-    final review = Review(
-      user: (await getCachedUser.call())!,
-      content: content,
-      rating: rating,
-      timestamp: DateTime.now(),
-    );
-    final result = await addReview.call(id, review);
-    result.fold(
-      (failure) {
-        emit(ShopState.error(failure.message));
-      },
-      (unit) {
-        emit(ShopState.success('Added review successfully'));
-      },
-    );
+    emit(ShopState.loading());
+    print('review with rating $rating and content: $content');
+    try {
+      final review = Review(
+        user: (await getCachedUser.call())!,
+        content: content,
+        rating: rating,
+        timestamp: DateTime.now(),
+      );
+      final result = await addReview.call(id, review);
+      result.fold(
+        (failure) {
+          emit(ShopState.error(failure.message));
+        },
+        (unit) {
+          emit(ShopState.success('Added review successfully'));
+        },
+      );
+    } catch (e) {
+      emit(ShopState.error(e.toString()));
+    }
   }
 
   void attemptGetCategoryList() async {
@@ -77,6 +83,7 @@ class ShopCubit extends Cubit<ShopState> {
   }
 
   void attemptGetProductReviews(String id) async {
+    emit(ShopState.loading());
     final result = await getProductReviews.call(id);
     result.fold(
       (failure) {
