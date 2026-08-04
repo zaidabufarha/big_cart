@@ -50,7 +50,7 @@ class GreenSwitchListTile extends StatelessWidget {
                 Colors.white,
               ),
               trackColor: WidgetStateProperty.all(
-                AppColors.primaryDark,
+                (isActive) ? AppColors.primaryDark : AppColors.textSecondary,
               ),
               trackOutlineColor: WidgetStateColor.transparent,
             ),

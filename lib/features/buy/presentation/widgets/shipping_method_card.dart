@@ -3,21 +3,38 @@ import 'package:big_cart/core/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-class ShippingMethodCard extends StatelessWidget {
-  double price;
-  String title;
-  String description;
-
+class ShippingMethodCard extends StatefulWidget {
+  final double price;
+  final String title;
+  final String description;
+  bool isSelected;
   ShippingMethodCard({
     required this.price,
     required this.title,
     required this.description,
+    required this.isSelected,
     super.key,
   });
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ShippingMethodCardState();
+  }
+}
+
+class _ShippingMethodCardState extends State<ShippingMethodCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.backgroundPrimary,
+      decoration: BoxDecoration(
+        color: AppColors.backgroundPrimary,
+        border: Border.all(
+          color: (widget.isSelected)
+              ? AppColors.primaryDark
+              : Colors.transparent,
+          width: 3,
+        ),
+      ),
       padding: EdgeInsets.all(20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,18 +46,18 @@ class ShippingMethodCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  widget.title,
                   style: Fonts.titleBold(),
                 ),
                 Text(
-                  description,
+                  widget.description,
                   style: Fonts.paragraphMedium(),
                 ),
               ],
             ),
           ),
           Text(
-            '\$$price',
+            '\$${widget.price}',
             style: Fonts.paragraphRegular().copyWith(
               color: AppColors.primaryDark,
             ),

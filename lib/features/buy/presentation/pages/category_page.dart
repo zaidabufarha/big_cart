@@ -10,10 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CategoryPage extends StatefulWidget {
   Category? category;
   String? searchTerm;
-  bool isFavoritesPage = false;
   CategoryPage(this.category, {super.key});
-  CategoryPage.search(this.searchTerm);
-  CategoryPage.favorites() : isFavoritesPage = true;
+  CategoryPage.search(this.searchTerm, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -54,8 +52,6 @@ class _CategoryPageState extends State<CategoryPage> {
         title: Text(
           (widget.category != null)
               ? widget.category!.name
-              : (widget.isFavoritesPage)
-              ? 'Favorites'
               : widget.searchTerm!,
         ),
         backgroundColor: AppColors.backgroundPrimary,
@@ -73,12 +69,6 @@ class _CategoryPageState extends State<CategoryPage> {
                       .where(
                         (product) =>
                             (product.category.name == widget.category!.name),
-                      )
-                      .toList();
-                } else if (widget.isFavoritesPage) {
-                  filteredList = products
-                      .where(
-                        (product) => (product.isFavorite),
                       )
                       .toList();
                 } else {

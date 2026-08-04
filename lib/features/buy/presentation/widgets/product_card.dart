@@ -1,20 +1,36 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
+import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:big_cart/features/buy/domain/entities/product.dart';
+import 'package:big_cart/features/buy/presentation/cubit/cubit/cart_cubit.dart';
+import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart';
 import 'package:big_cart/features/buy/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   Product product;
   ProductCard(this.product, {super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ProductCardState();
+  }
+}
+
+class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: ((context) => ProductPage(product))));
+        ).push(
+          MaterialPageRoute(
+            builder: ((context) => ProductPage(widget.product)),
+          ),
+        );
       },
       child: SizedBox(
         height: 300.h,
@@ -29,9 +45,17 @@ class ProductCard extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      widget.product.isFavorite = !widget.product.isFavorite;
+                      context.read<ShopCubit>().attemptToggleFavorite(
+                        widget.product.id,
+                        widget.product.isFavorite,
+                      );
+                    });
+                  },
                   icon: Icon(
-                    (product.isFavorite)
+                    (widget.product.isFavorite)
                         ? Icons.favorite
                         : Icons.favorite_border,
                     color: Colors.red,
@@ -47,11 +71,11 @@ class ProductCard extends StatelessWidget {
                   margin: EdgeInsets.all(10.r),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: product.color,
+                    color: widget.product.color,
                   ),
                   child: Center(
                     child: Image.asset(
-                      product.imagePath,
+                      widget.product.imagePath,
                       width: 100.w,
                       height: 100.h,
                     ),
@@ -67,18 +91,28 @@ class ProductCard extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        '\$${product.price.toStringAsFixed(2)}',
+                        '\$${widget.product.price.toStringAsFixed(2)}',
                         style: Fonts.paragraphRegular().copyWith(
                           color: AppColors.primaryDark,
                         ),
                       ),
-                      Text(product.name, style: Fonts.titleBold(size: 20)),
-                      Text(product.amount, style: Fonts.paragraphRegular()),
+                      Text(
+                        widget.product.name,
+                        style: Fonts.titleBold(size: 20),
+                      ),
+                      Text(
+                        widget.product.amount,
+                        style: Fonts.paragraphRegular(),
+                      ),
                       Divider(
                         thickness: 1.h,
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<CartCubit>().attemptAddToCart(
+                            CartItem(widget.product, 1),
+                          );
+                        },
                         child: Row(
                           spacing: 15.w,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +132,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
               ),
-              (product.isNew)
+              (widget.product.isNew)
                   ? Positioned(
                       child: Container(
                         padding: EdgeInsets.all(5.r),
@@ -111,13 +145,13 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     )
-                  : (product.discount != 0)
+                  : (widget.product.discount != 0)
                   ? Positioned(
                       child: Container(
                         padding: EdgeInsets.all(5.r),
                         color: Color(0xFFFEE4E4),
                         child: Text(
-                          '-${product.discount}%',
+                          '-${widget.product.discount}%',
                           style: Fonts.label().copyWith(
                             color: Color(0xFFF56262),
                           ),

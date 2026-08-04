@@ -8,7 +8,9 @@ import 'package:injectable/injectable.dart';
 class GetCartItems {
   final BuyRepository buyRepository;
   GetCartItems(this.buyRepository);
-  Future<Either<Failure, List<CartItem>>> call() async {
-    return await buyRepository.getCartItems();
+  Future<Either<Failure, List<CartItem>>> call({
+    bool isFavorites = false,
+  }) async {
+    return await buyRepository.getCartItems(isFavorites: isFavorites);
   }
 }

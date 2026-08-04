@@ -16,7 +16,7 @@ class OrderSuccessPage extends StatelessWidget {
       Navigator.of(
         context,
       ).push(
-        MaterialPageRoute(builder: (context) => TrackOrderPage(order.id!)),
+        MaterialPageRoute(builder: (context) => TrackOrderPage(order)),
       );
     }
 

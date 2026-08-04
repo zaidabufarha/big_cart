@@ -13,7 +13,12 @@ Future<void> configureDependencies() async => getIt.init();
 @module
 abstract class RegisterModule {
   @lazySingleton
-  Dio get dio => Dio();
+  Dio get dio => Dio(
+    BaseOptions(
+      baseUrl:
+          'https://bigcart-30ded-default-rtdb.asia-southeast1.firebasedatabase.app/',
+    ),
+  );
 
   @lazySingleton
   InternetConnectionChecker get internetConnectionChecker =>

@@ -8,15 +8,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _SignUpPage();
+  }
+}
+
+class _SignUpPage extends State<SignUpPage> {
+  bool obscure = true;
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     late String inputEmail;
     late String inputPhoneNumber;
     late String inputPassword;
-
-    final formKey = GlobalKey<FormState>();
 
     //this function doesnt use int but it's still a bit cleaner than reusing button code
     void onClick(int? index) {
@@ -106,7 +115,7 @@ class SignUpPage extends StatelessWidget {
                         key: formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 5.h,
+                          spacing: 3.h,
                           children: [
                             Text(
                               'Create account',
@@ -171,7 +180,7 @@ class SignUpPage extends StatelessWidget {
                               },
                             ),
                             TextFormField(
-                              obscureText: true,
+                              obscureText: obscure,
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
@@ -179,7 +188,19 @@ class SignUpPage extends StatelessWidget {
                                   borderSide: BorderSide.none,
                                 ),
                                 prefixIcon: Icon(Icons.lock_outline),
-                                suffixIcon: Icon(Icons.remove_red_eye_outlined),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      obscure = !obscure;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    (obscure)
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                                 hint: Text(
                                   'Password',
                                   style: Fonts.paragraphRegular().copyWith(

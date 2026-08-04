@@ -25,6 +25,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     void onClick(int? index) {
       isValid = formKey.currentState!.validate();
       if (isValid) {
+        formKey.currentState!.save();
         context.read<AuthCubit>().userForgotPassword(email!);
         Navigator.of(context).pop();
       }

@@ -46,7 +46,7 @@ class AddressCubit extends Cubit<AddressState> {
     );
   }
 
-  void attemptUpdateAddress({required Address address}) async {
+  Future<void> attemptUpdateAddress({required Address address}) async {
     emit(AddressState.loading());
     final result = await updateAddress.call(address);
     result.fold(

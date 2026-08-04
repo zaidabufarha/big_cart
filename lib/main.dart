@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized;
+  WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   runApp(
     MyApp(),
@@ -46,7 +46,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<ShopCubit>()),
         BlocProvider(create: (context) => getIt<CartCubit>()),
       ],
-      child: MaterialApp(home: SplashScreen(0)),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(0),
+      ),
     );
   }
 }

@@ -6,6 +6,11 @@ abstract class ApiConsumer {
     required String path,
     Map<String, dynamic>? queryParameters,
   });
+  Future<dynamic> put({
+    required String path,
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  });
   Future<dynamic> post({
     required String path,
     dynamic data,
@@ -61,6 +66,21 @@ class DioConsumer implements ApiConsumer {
     Map<String, dynamic>? queryParameters,
   }) async {
     final response = await dio.post(
+      path,
+      queryParameters: queryParameters,
+      data: data,
+    );
+    return response;
+  }
+
+  //put is like post but at a specific lcation
+  @override
+  Future<dynamic> put({
+    required String path,
+    data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    final response = await dio.put(
       path,
       queryParameters: queryParameters,
       data: data,

@@ -71,6 +71,7 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
                 backgroundColor: AppColors.primaryDark,
               ),
             );
+            context.read<CardsCubit>().attemptGetCreditCards();
             Navigator.of(context).pop();
           },
           orElse: () {},
@@ -114,12 +115,12 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
                 style: Fonts.titleBold(size: 20),
               ),
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: EdgeInsetsGeometry.all(20),
-                  child: SingleChildScrollView(
+            body: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: EdgeInsetsGeometry.all(20),
                     child: Form(
                       key: formKey,
                       child: Column(
@@ -282,13 +283,13 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
                       ),
                     ),
                   ),
-                ),
 
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: GreenGradientButton(onClick, 'Save settings'),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: GreenGradientButton(onClick, 'Save settings'),
+                  ),
+                ],
+              ),
             ),
           ),
         );

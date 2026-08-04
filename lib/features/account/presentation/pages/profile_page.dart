@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/features/account/presentation/cubit/cubit/user_cubit.dart';
@@ -8,6 +10,7 @@ import 'package:big_cart/features/account/presentation/pages/notifications_page.
 import 'package:big_cart/features/account/presentation/pages/order_page.dart';
 import 'package:big_cart/features/account/presentation/pages/transactions_page.dart';
 import 'package:big_cart/features/account/presentation/widgets/profile_page_option.dart';
+import 'package:big_cart/features/auth/presentation/pages/splash_screen.dart';
 import 'package:big_cart/features/buy/presentation/pages/cart_page.dart';
 import 'package:big_cart/features/buy/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 border: Border.all(width: 10.w, color: Colors.white),
               ),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => CartPage()));
+                },
                 icon: Icon(
                   Icons.shopping_bag_outlined,
                   color: Colors.white,
@@ -276,7 +283,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 border: Border.all(width: 10.w, color: Colors.white),
               ),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => CartPage()));
+                },
                 icon: Icon(
                   Icons.shopping_bag_outlined,
                   color: Colors.white,
@@ -287,6 +298,24 @@ class _ProfilePageState extends State<ProfilePage> {
                 FloatingActionButtonLocation.endDocked,
 
             bottomNavigationBar: NavigationBar(
+              selectedIndex: 1,
+              onDestinationSelected: (index) {
+                if (index == 0) {
+                  Navigator.of(
+                    context,
+                  ).push(
+                    MaterialPageRoute(builder: ((context) => HomePage())),
+                  );
+                } else if (index == 2) {
+                  Navigator.of(
+                    context,
+                  ).push(
+                    MaterialPageRoute(
+                      builder: ((context) => CartPage.favorites()),
+                    ),
+                  );
+                }
+              },
               labelPadding: EdgeInsets.only(top: 40),
               height: 30.h,
               // i "show" the labels so i can push the icons up. not visible which is what i want
@@ -300,16 +329,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 NavigationDestination(
                   icon: Icon(
                     Icons.home_outlined,
-                    color: AppColors.textSecondary,
                     size: 30.r,
+                    color: AppColors.textPrimary,
                   ),
                   label: 'Home',
                 ),
                 NavigationDestination(
                   icon: Icon(
                     Icons.person_outline,
-                    color: AppColors.textPrimary,
-
+                    color: AppColors.textSecondary,
                     size: 30.r,
                   ),
                   label: 'Profile',
@@ -339,15 +367,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: double.infinity,
                     color: AppColors.backgroundSecondary,
                     child: Column(
-                      spacing: 20.h,
+                      spacing: 15.h,
                       children: [
                         SizedBox(
-                          height: 100.h,
+                          height: 80.h,
                         ),
                         ProfilePageOption(
                           icon: Icons.person_outline,
                           text: 'About me',
-                          destination: AboutPage(),
+                          destination: AboutPage(user),
                         ),
                         ProfilePageOption(
                           icon: Icons.inventory_2_outlined,
@@ -357,7 +385,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ProfilePageOption(
                           icon: Icons.favorite_outline,
                           text: 'My Favorites',
-                          destination: HomePage(),
+                          destination: CartPage.favorites(),
                         ),
                         ProfilePageOption(
                           icon: Icons.location_on_outlined,
@@ -380,9 +408,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           destination: NotificationsPage(),
                         ),
                         ProfilePageOption(
+                          signOut: true,
                           icon: Icons.logout_rounded,
                           text: 'Sign out',
-                          destination: HomePage(),
+                          destination: SplashScreen(0),
                         ),
                       ],
                     ),
@@ -397,11 +426,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       CircleAvatar(
                         radius: 67.r,
-                        backgroundImage: AssetImage(
-                          (user.imagePath != null)
-                              ? user.imagePath
-                              : 'assets/blank_profile_picture.png',
-                        ),
+                        backgroundImage:
+                            (!user.imagePath.startsWith('assets/') &&
+                                File(
+                                  user.imagePath,
+                                ).existsSync()) //this way i can know if it's still the defaultor if it got changed to a different file
+                            ? FileImage(File(user.imagePath)) as ImageProvider
+                            : AssetImage(
+                                'assets/blank_profile_picture.png',
+                              ),
                       ),
                       Text(
                         user.name,

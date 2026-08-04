@@ -10,6 +10,9 @@ abstract class UserLocalDataSource {
   Future<Unit> cacheUser(UserModel user);
   Future<UserModel?> getCachedUser();
   Future<Unit> clearCache();
+  Future<void> saveCredentials(String email, String password);
+  Future<Map<String, String>?> getSavedCredentials();
+  Future<void> clearCredentials();
 }
 
 @LazySingleton(as: UserLocalDataSource)
@@ -28,7 +31,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<Unit> clearCache() async {
-    await sharedPreferences.clear();
+    await sharedPreferences.remove('CACHED_USER');
     return unit;
   }
 
@@ -51,5 +54,32 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
     } else {
       return response;
     }
+  }
+
+  Future<void> saveSavedCredentials(String email, String password) async {
+    await sharedPreferences.setString('SAVED_EMAIL', email);
+    await sharedPreferences.setString('SAVED_PASSWORD', password);
+  }
+
+  @override
+  Future<void> clearCredentials() async {
+    await sharedPreferences.remove('SAVED_EMAIL');
+    await sharedPreferences.remove('SAVED_PASSWORD');
+  }
+
+  @override
+  Future<Map<String, String>?> getSavedCredentials() async {
+    final email = sharedPreferences.getString('SAVED_EMAIL');
+    final password = sharedPreferences.getString('SAVED_PASSWORD');
+    if (email != null && password != null) {
+      return {'email': email, 'password': password};
+    }
+    return null;
+  }
+
+  @override
+  Future<void> saveCredentials(String email, String password) async {
+    await sharedPreferences.setString('SAVED_EMAIL', email);
+    await sharedPreferences.setString('SAVED_PASSWORD', password);
   }
 }

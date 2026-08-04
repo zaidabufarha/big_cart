@@ -50,6 +50,7 @@ class ShopCubit extends Cubit<ShopState> {
   }
 
   void attemptGetCategoryList() async {
+    emit(ShopState.loading());
     final result = await getCategoryList.call();
     result.fold(
       (failure) {
@@ -62,6 +63,8 @@ class ShopCubit extends Cubit<ShopState> {
   }
 
   void attemptGetProductList() async {
+    emit(ShopState.loading());
+
     final result = await getProductList.call();
     result.fold(
       (failure) {

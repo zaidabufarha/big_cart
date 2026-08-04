@@ -14,16 +14,18 @@ class CreditCardModel extends CreditCard {
     required super.expiryDate,
     required super.cvv,
     required super.proccessor,
+    super.isDefault = false,
   });
 
   factory CreditCardModel.fromEntity(CreditCard entity) => CreditCardModel(
-        id: entity.id,
-        name: entity.name,
-        cardNumber: entity.cardNumber,
-        expiryDate: entity.expiryDate,
-        cvv: entity.cvv,
-        proccessor: entity.proccessor,
-      );
+    id: entity.id,
+    name: entity.name,
+    cardNumber: entity.cardNumber,
+    expiryDate: entity.expiryDate,
+    cvv: entity.cvv,
+    proccessor: entity.proccessor,
+    isDefault: entity.isDefault,
+  );
 
   factory CreditCardModel.fromJson(Map<String, dynamic> json) =>
       _$CreditCardModelFromJson(json);

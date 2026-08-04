@@ -31,8 +31,6 @@ import 'package:big_cart/features/account/domain/use_cases/get_credit_cards.dart
     as _i600;
 import 'package:big_cart/features/account/domain/use_cases/get_notification_preferences.dart'
     as _i151;
-import 'package:big_cart/features/account/domain/use_cases/get_order.dart'
-    as _i296;
 import 'package:big_cart/features/account/domain/use_cases/get_orders.dart'
     as _i856;
 import 'package:big_cart/features/account/domain/use_cases/get_transactions.dart'
@@ -67,17 +65,27 @@ import 'package:big_cart/features/auth/domain/repositories/auth_repository.dart'
     as _i832;
 import 'package:big_cart/features/auth/domain/use%20cases/cache_user.dart'
     as _i290;
+import 'package:big_cart/features/auth/domain/use%20cases/clear_credentials.dart'
+    as _i515;
 import 'package:big_cart/features/auth/domain/use%20cases/forgot_password.dart'
     as _i211;
 import 'package:big_cart/features/auth/domain/use%20cases/get_cached_user.dart'
     as _i1036;
+import 'package:big_cart/features/auth/domain/use%20cases/get_saved_credentials.dart'
+    as _i372;
 import 'package:big_cart/features/auth/domain/use%20cases/log_in.dart' as _i270;
+import 'package:big_cart/features/auth/domain/use%20cases/save_credentials.dart'
+    as _i77;
 import 'package:big_cart/features/auth/domain/use%20cases/send_otp.dart'
     as _i491;
+import 'package:big_cart/features/auth/domain/use%20cases/sign_out.dart'
+    as _i937;
 import 'package:big_cart/features/auth/domain/use%20cases/sign_up.dart'
     as _i357;
 import 'package:big_cart/features/auth/domain/use%20cases/verify_otp.dart'
     as _i210;
+import 'package:big_cart/features/auth/presentation/cubit/cubit/auth_cubit.dart'
+    as _i832;
 import 'package:big_cart/features/buy/data/data_sources/buy_remote_data_source.dart'
     as _i325;
 import 'package:big_cart/features/buy/data/repositories/buy_repository_impl.dart'
@@ -190,6 +198,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i290.CacheUser>(
       () => _i290.CacheUser(gh<_i832.AuthRepository>()),
     );
+    gh.lazySingleton<_i515.ClearCredentials>(
+      () => _i515.ClearCredentials(gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i372.GetSavedCredentials>(
+      () => _i372.GetSavedCredentials(gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i77.SaveCredentials>(
+      () => _i77.SaveCredentials(gh<_i832.AuthRepository>()),
+    );
+    gh.lazySingleton<_i937.SignOut>(
+      () => _i937.SignOut(gh<_i832.AuthRepository>()),
+    );
     gh.lazySingleton<_i72.BuyRepository>(
       () => _i396.BuyRepositoryImpl(
         gh<_i325.BuyRemoteDataSource>(),
@@ -228,9 +248,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i151.GetNotificationPreferences(
         accountRepository: gh<_i62.AccountRepository>(),
       ),
-    );
-    gh.lazySingleton<_i296.GetOrder>(
-      () => _i296.GetOrder(accountRepository: gh<_i62.AccountRepository>()),
     );
     gh.lazySingleton<_i856.GetOrders>(
       () => _i856.GetOrders(accountRepository: gh<_i62.AccountRepository>()),
@@ -307,6 +324,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i513.UpdateQuantity>(
       () => _i513.UpdateQuantity(gh<_i72.BuyRepository>()),
     );
+    gh.factory<_i832.AuthCubit>(
+      () => _i832.AuthCubit(
+        gh<_i1036.GetCachedUser>(),
+        gh<_i270.LogIn>(),
+        gh<_i357.SignUp>(),
+        gh<_i491.SendOtp>(),
+        gh<_i290.CacheUser>(),
+        gh<_i210.VerifyOtp>(),
+        gh<_i211.ForgotPassword>(),
+        gh<_i937.SignOut>(),
+        gh<_i77.SaveCredentials>(),
+        gh<_i372.GetSavedCredentials>(),
+        gh<_i515.ClearCredentials>(),
+      ),
+    );
     gh.factory<_i475.TransactionsCubit>(
       () => _i475.TransactionsCubit(gh<_i526.GetTransactions>()),
     );
@@ -327,7 +359,7 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i194.OrdersCubit>(
-      () => _i194.OrdersCubit(gh<_i296.GetOrder>(), gh<_i856.GetOrders>()),
+      () => _i194.OrdersCubit(gh<_i856.GetOrders>()),
     );
     gh.factory<_i9.ShopCubit>(
       () => _i9.ShopCubit(

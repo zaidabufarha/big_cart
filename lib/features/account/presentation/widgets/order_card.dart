@@ -3,6 +3,7 @@ import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/features/account/domain/entities/order.dart';
 import 'package:big_cart/features/account/presentation/pages/track_order_page.dart';
 import 'package:big_cart/features/account/presentation/widgets/order_progress_indicator.dart';
+import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +23,16 @@ class OrderCard extends StatefulWidget {
 class _OrderCardState extends State<OrderCard> {
   final formKey = GlobalKey();
   bool isClosed = true;
+  int numberOfItems = 0;
+  @override
+  void initState() {
+    for (CartItem item in widget.order.productList) {
+      numberOfItems += item.quantity;
+      //print('${item.product.name} has ${item.quantity}');
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -31,8 +42,8 @@ class _OrderCardState extends State<OrderCard> {
         ).push(
           MaterialPageRoute(
             builder: (context) => TrackOrderPage(
-              widget.order.id!,
-            ), //! because trackorder only works when it's fetched from firebase and tagged with an id
+              widget.order,
+            ),
           ),
         );
       },
@@ -87,8 +98,7 @@ class _OrderCardState extends State<OrderCard> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: widget.order.productList.length
-                                      .toString(),
+                                  text: numberOfItems.toString(),
                                   style: Fonts.label().copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.textPrimary,

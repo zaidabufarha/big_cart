@@ -1,4 +1,4 @@
-import 'package:big_cart/features/account/presentation/cubit/cubit/cards_cubit.dart';
+import 'package:big_cart/features/account/domain/entities/order.dart';
 import 'package:big_cart/features/buy/domain/entities/cart_item.dart';
 import 'package:big_cart/features/buy/domain/use%20cases/add_to_cart.dart';
 import 'package:big_cart/features/buy/domain/use%20cases/check_out.dart';
@@ -7,7 +7,7 @@ import 'package:big_cart/features/buy/domain/use%20cases/remove_from_cart.dart';
 import 'package:big_cart/features/buy/domain/use%20cases/update_quantity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable.dart' hide Order;
 
 part 'cart_state.dart';
 part 'cart_cubit.freezed.dart';
@@ -27,8 +27,8 @@ class CartCubit extends Cubit<CartState> {
   RemoveFromCart removeFromCart;
   CheckOut checkOut;
 
-  void attemptGetCartItems() async {
-    final result = await getCartItems.call();
+  void attemptGetCartItems({bool isFavorites = false}) async {
+    final result = await getCartItems.call(isFavorites: isFavorites);
     result.fold(
       (failure) {
         emit(CartState.error(failure.message));
@@ -66,6 +66,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   void attemptRemoveFromCart(CartItem item) async {
+    emit(CartState.loading());
     final result = await removeFromCart.call(item);
     result.fold(
       (failure) {
@@ -77,8 +78,8 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  void attemptCheckOut(List<CartItem> list) async {
-    final result = await checkOut.call(list);
+  void attemptCheckOut(Order order) async {
+    final result = await checkOut.call(order);
     result.fold(
       (failure) {
         emit(CartState.error(failure.message));

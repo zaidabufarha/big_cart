@@ -45,7 +45,7 @@ class CardsCubit extends Cubit<CardsState> {
     );
   }
 
-  void attemptUpdateCreditCard({required CreditCard card}) async {
+  Future<void> attemptUpdateCreditCard({required CreditCard card}) async {
     final result = await updateCreditCard.call(card);
 
     result.fold(

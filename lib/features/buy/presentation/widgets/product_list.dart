@@ -14,9 +14,9 @@ class ProductList extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(), //already scroll with singlechild
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 0.7,
+        crossAxisSpacing: 20.w,
+        mainAxisSpacing: 20.h,
+        childAspectRatio: 0.6,
       ),
       itemBuilder: (context, index) => ProductCard(productList[index]),
     );

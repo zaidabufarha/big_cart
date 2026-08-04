@@ -1,16 +1,16 @@
 import 'package:big_cart/core/colors.dart';
 import 'package:big_cart/core/fonts.dart';
 import 'package:big_cart/features/account/domain/entities/address.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class AddressCard extends StatefulWidget {
-  final formKey = GlobalKey();
   final Function(Address updatedAddress) onChanged;
 
   final Address address;
 
-  AddressCard(this.address, this.onChanged, {super.key});
+  const AddressCard(this.address, this.onChanged, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -20,7 +20,6 @@ class AddressCard extends StatefulWidget {
 
 class _AddressCardState extends State<AddressCard> {
   bool isClosed = true;
-  late bool isDefault;
   late String name;
   late String address;
   late String city;
@@ -29,7 +28,6 @@ class _AddressCardState extends State<AddressCard> {
   late String number;
   @override
   void initState() {
-    isDefault = widget.address.isDefault;
     name = widget.address.name;
     address = widget.address.address;
     city = widget.address.city;
@@ -48,7 +46,7 @@ class _AddressCardState extends State<AddressCard> {
         spacing: 7.h,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          (isDefault)
+          (widget.address.isDefault)
               ? Container(
                   color: AppColors.primaryLight,
                   child: Text(
@@ -131,6 +129,7 @@ class _AddressCardState extends State<AddressCard> {
                     spacing: 5.h,
                     children: [
                       TextFormField(
+                        initialValue: widget.address.name,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.backgroundSecondary,
@@ -164,12 +163,14 @@ class _AddressCardState extends State<AddressCard> {
                               number: number,
                               zip: zip,
                               id: widget.address.id,
-                              isDefault: isDefault,
+                              isDefault: widget.address.isDefault,
                             ),
                           );
                         },
                       ),
                       TextFormField(
+                        initialValue: widget.address.address,
+
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.backgroundSecondary,
@@ -203,7 +204,7 @@ class _AddressCardState extends State<AddressCard> {
                               number: number,
                               zip: zip,
                               id: widget.address.id,
-                              isDefault: isDefault,
+                              isDefault: widget.address.isDefault,
                             ),
                           );
                         },
@@ -214,6 +215,8 @@ class _AddressCardState extends State<AddressCard> {
                         children: [
                           Expanded(
                             child: TextFormField(
+                              initialValue: widget.address.city,
+
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: AppColors.backgroundSecondary,
@@ -247,7 +250,7 @@ class _AddressCardState extends State<AddressCard> {
                                     number: number,
                                     zip: zip,
                                     id: widget.address.id,
-                                    isDefault: isDefault,
+                                    isDefault: widget.address.isDefault,
                                   ),
                                 );
                               },
@@ -255,6 +258,8 @@ class _AddressCardState extends State<AddressCard> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              initialValue: widget.address.zip,
+
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: AppColors.backgroundSecondary,
@@ -288,7 +293,7 @@ class _AddressCardState extends State<AddressCard> {
                                     number: number,
                                     zip: zip,
                                     id: widget.address.id,
-                                    isDefault: isDefault,
+                                    isDefault: widget.address.isDefault,
                                   ),
                                 );
                               },
@@ -296,29 +301,55 @@ class _AddressCardState extends State<AddressCard> {
                           ),
                         ],
                       ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: AppColors.backgroundSecondary,
-                          prefixIcon: Icon(
-                            Icons.language_outlined,
-                            color: AppColors.textSecondary,
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          hint: Text(
-                            'Country',
-                            style: Fonts.paragraphRegular(),
+                      InkWell(
+                        onTap: () {
+                          showCountryPicker(
+                            context: context,
+                            showPhoneCode: false,
+                            onSelect: (Country selectedCountry) {
+                              setState(() {
+                                country = selectedCountry.name;
+                              });
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          color: AppColors.backgroundSecondary,
+                          padding: EdgeInsets.all(10),
+                          height: 56.h,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                spacing: 12.w,
+                                children: [
+                                  Icon(
+                                    Icons.language,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  Text(
+                                    country,
+                                    style: Fonts.paragraphRegular(),
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_drop_down,
+                                color: AppColors.textSecondary,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       TextFormField(
+                        initialValue: widget.address.number,
+
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.backgroundSecondary,
                           prefixIcon: Icon(
-                            Icons.person_outline,
+                            Icons.phone_outlined,
                             color: AppColors.textSecondary,
                           ),
                           border: OutlineInputBorder(
@@ -347,7 +378,7 @@ class _AddressCardState extends State<AddressCard> {
                               number: number,
                               zip: zip,
                               id: widget.address.id,
-                              isDefault: isDefault,
+                              isDefault: widget.address.isDefault,
                             ),
                           );
                         },
@@ -359,7 +390,7 @@ class _AddressCardState extends State<AddressCard> {
                               alignment: Alignment.centerLeft,
                               scale: 0.8,
                               child: SwitchListTile(
-                                value: isDefault,
+                                value: widget.address.isDefault,
                                 title: Text(
                                   'Make default',
                                   style: Fonts.titleBold(),
@@ -371,14 +402,16 @@ class _AddressCardState extends State<AddressCard> {
                                   Colors.white,
                                 ),
                                 trackColor: WidgetStateProperty.all(
-                                  AppColors.primaryDark,
+                                  (widget.address.isDefault)
+                                      ? AppColors.primaryDark
+                                      : AppColors.textSecondary,
                                 ),
                                 dense: true,
                                 visualDensity: VisualDensity.compact,
                                 trackOutlineColor: WidgetStateColor.transparent,
                                 onChanged: (val) {
                                   setState(() {
-                                    isDefault = val;
+                                    widget.address.isDefault = val;
                                   });
                                   widget.onChanged(
                                     Address(

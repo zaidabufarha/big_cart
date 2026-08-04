@@ -31,4 +31,7 @@ abstract class AuthRepository {
   Future<void> cacheUser(User user);
   Future<User?> getCachedUser();
   Future<void> clearCache();
+  Future<void> saveCredentials(String email, String password);
+  Future<Map<String, String>?> getSavedCredentials();
+  Future<void> clearCredentials();
 }

@@ -34,7 +34,7 @@ class UserCubit extends Cubit<UserState> {
         emit(UserState.error(failure.message));
       },
       (unit) {
-        UserState.success('Image changed successfully');
+        emit(UserState.success('Image changed successfully'));
       },
     );
   }

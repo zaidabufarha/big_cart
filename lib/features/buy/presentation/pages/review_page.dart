@@ -12,7 +12,7 @@ import 'package:flutter_screenutil_plus/flutter_screenutil_plus.dart';
 
 class ReviewPage extends StatefulWidget {
   final Product product;
-  ReviewPage(this.product, {super.key});
+  const ReviewPage(this.product, {super.key});
 
   @override
   State<StatefulWidget> createState() {

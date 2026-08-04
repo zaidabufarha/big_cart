@@ -30,13 +30,28 @@ class _AddressPageState extends State<AddressPage> {
 
   @override
   Widget build(BuildContext context) {
-    void onClick(int? index) {
+    void onClick(int? index) async {
       bool isValid = formKey.currentState!.validate();
       if (isValid) {
         formKey.currentState!.save();
+        Address? defaultAddress;
+        Address? lastAddress;
         for (Address address in list) {
-          context.read<AddressCubit>().attemptUpdateAddress(address: address);
+          if (!address.isDefault) {
+            lastAddress = address;
+            await context.read<AddressCubit>().attemptUpdateAddress(
+              address: address,
+            );
+          } else {
+            defaultAddress = address;
+          }
         }
+        if (defaultAddress != null) {
+          await context.read<AddressCubit>().attemptUpdateAddress(
+            address: defaultAddress,
+          );
+        }
+
         hasBeenLoaded = false;
       }
     }
@@ -70,7 +85,12 @@ class _AddressPageState extends State<AddressPage> {
         padding: EdgeInsetsGeometry.all(20),
         child: BlocConsumer<AddressCubit, AddressState>(
           listener: (context, state) {
-            state.maybeWhen(
+            state.whenOrNull(
+              loaded: (addresses) {
+                if (!hasBeenLoaded) list = List.from(addresses);
+                hasBeenLoaded = true;
+              },
+
               error: (message) {
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -85,18 +105,46 @@ class _AddressPageState extends State<AddressPage> {
                   ),
                 );
               },
-              loaded: (addresses) {
-                hasBeenLoaded = false;
-                //when a new state with a new list is emitted i reset this to reset the local list
+
+              success: (message) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      message,
+                      style: Fonts.paragraphMedium().copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                    backgroundColor: AppColors.primaryDark,
+                  ),
+                );
               },
-              orElse: () {},
             );
           },
           builder: (context, state) {
             return state.maybeWhen(
-              loaded: (addresses) {
-                if (!hasBeenLoaded) list = addresses;
-                hasBeenLoaded = true;
+              loading: () => Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (message) => Column(
+                children: [
+                  Text(message, style: Fonts.titleBold()),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      context.read<AddressCubit>().attemptGetAddressesCubit();
+                    },
+                    label: Text(
+                      'Retry',
+                      style: Fonts.paragraphMedium(),
+                    ),
+                    icon: Icon(Icons.restart_alt),
+                  ),
+                ],
+              ),
+              orElse: () {
                 return Form(
                   key: formKey,
                   child: Column(
@@ -106,13 +154,12 @@ class _AddressPageState extends State<AddressPage> {
                           child: Column(
                             spacing: 10.h,
                             children: [
-                              for (int i = 0; i < addresses.length; i++)
+                              for (int i = 0; i < list.length; i++)
                                 AddressCard(list[i], (updatedAddress) {
                                   setState(() {
                                     list[i] = updatedAddress;
                                     if (updatedAddress.isDefault) {
                                       for (int j = 0; j < list.length; j++) {
-                                        //only one default value
                                         if (j != i) list[j].isDefault = false;
                                       }
                                     }
@@ -127,24 +174,6 @@ class _AddressPageState extends State<AddressPage> {
                   ),
                 );
               },
-              loading: () => Center(
-                child: CircularProgressIndicator(),
-              ),
-              orElse: () => Column(
-                children: [
-                  Text('Something went wrong'),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context.read<AddressCubit>().attemptGetAddressesCubit();
-                    },
-                    label: Text(
-                      'Retry',
-                      style: Fonts.paragraphMedium(),
-                    ),
-                    icon: Icon(Icons.restart_alt),
-                  ),
-                ],
-              ),
             );
           },
         ),

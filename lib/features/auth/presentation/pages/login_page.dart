@@ -20,9 +20,25 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
-  late String inputEmail;
-  late String inputPassword;
+  String inputEmail = '';
+  String inputPassword = '';
   bool inputRemember = true;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthCubit>().attemptGetSavedCredentials();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   //this function doesnt use int but it's still a bit cleaner than reusing button code
   void onClick(int? index) {
@@ -56,7 +72,10 @@ class _LoginPageState extends State<LoginPage> {
               context,
             ).showSnackBar(SnackBar(content: Text(errorMessage)));
           },
-
+          loadedCredentials: (email, password) {
+            emailController.text = email;
+            passwordController.text = password;
+          },
           orElse: () {},
         );
       },
@@ -107,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       child: Form(
+                        key: formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 5.h,
@@ -124,6 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             TextFormField(
+                              controller: emailController,
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
@@ -149,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             ),
                             TextFormField(
+                              controller: passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -195,9 +217,23 @@ class _LoginPageState extends State<LoginPage> {
                                           'Remember me',
                                           style: Fonts.paragraphRegular(),
                                         ),
-                                        value: rememberplaceholder,
+                                        thumbColor: WidgetStateProperty.all(
+                                          Colors.white,
+                                        ),
+                                        trackColor: WidgetStateProperty.all(
+                                          (inputRemember)
+                                              ? AppColors.primaryDark
+                                              : AppColors.textSecondary,
+                                        ),
+                                        dense: true,
+                                        visualDensity: VisualDensity.compact,
+                                        trackOutlineColor:
+                                            WidgetStateColor.transparent,
+                                        value: inputRemember,
                                         onChanged: (isChecked) {
-                                          inputRemember = isChecked;
+                                          setState(() {
+                                            inputRemember = isChecked;
+                                          });
                                         },
                                       ),
                                     ),

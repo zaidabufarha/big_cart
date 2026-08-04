@@ -16,7 +16,7 @@ class WrongOTPFailure extends Failure {
 }
 
 class InvalidEmailFailure extends Failure {
-  InvalidEmailFailure([super.message = 'Email already in use']);
+  InvalidEmailFailure([super.message = 'Invalid email']);
 }
 
 class InvalidNumberFailure extends Failure {

@@ -33,25 +33,21 @@ class AccountRepositoryImpl implements AccountRepository {
     required String phoneNumber,
     required bool makeDefault,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await accountRemoteDataSource.addAddress(
-          name: name,
-          address: address,
-          city: city,
-          zip: zip,
-          country: country,
-          phoneNumber: phoneNumber,
-          makeDefault: makeDefault,
-        );
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      await accountRemoteDataSource.addAddress(
+        name: name,
+        address: address,
+        city: city,
+        zip: zip,
+        country: country,
+        phoneNumber: phoneNumber,
+        makeDefault: makeDefault,
+      );
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
@@ -64,24 +60,20 @@ class AccountRepositoryImpl implements AccountRepository {
     required bool saveCard,
     required paymentProccessor proccessor,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await accountRemoteDataSource.addCreditCard(
-          name: name,
-          cardNumber: cardNumber,
-          expiration: expiration,
-          cvv: cvv,
-          saveCard: saveCard,
-          proccessor: proccessor,
-        );
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      await accountRemoteDataSource.addCreditCard(
+        name: name,
+        cardNumber: cardNumber,
+        expiration: expiration,
+        cvv: cvv,
+        saveCard: saveCard,
+        proccessor: proccessor,
+      );
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
@@ -89,137 +81,91 @@ class AccountRepositoryImpl implements AccountRepository {
   Future<Either<Failure, Unit>> addProfilePicture({
     required String path,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await accountRemoteDataSource.addProfilePicture(path: path);
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      await accountRemoteDataSource.addProfilePicture(path: path);
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, List<Address>>> getAddresses() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getAddresses();
-        return Right(response);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource.getAddresses();
+      return Right(response);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, List<CreditCard>>> getCreditCards() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getCreditCards();
-        return Right(response);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource.getCreditCards();
+      return Right(response);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, NotificationPreferences>>
   getNotificationPreferences() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource
-            .getNotificationPreferences();
-        return Right(response);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource
+          .getNotificationPreferences();
+      return Right(response);
+    } on NoInternetException {
       return Left(NoInternetFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, Order>> getOrder(int orderId) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getOrder(orderId);
-        return Right(response);
-      } on NoDataException {
-        return Left(NoDataFailure());
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
-      return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, List<Order>>> getOrders() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getOrders();
-        return Right(response);
-      } on NoDataException {
-        return Left(NoDataFailure());
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource.getOrders();
+      return Right(response);
+    } on NoDataException {
+      return Left(NoDataFailure());
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, List<Transaction>>> getTransactions() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getTransactions();
-        return Right(response);
-      } on NoDataException {
-        return Left(NoDataFailure());
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource.getTransactions();
+      return Right(response);
+    } on NoDataException {
+      return Left(NoDataFailure());
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, User>> getUserData() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final response = await accountRemoteDataSource.getUserData();
-        return Right(response);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final response = await accountRemoteDataSource.getUserData();
+      return Right(response);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
@@ -230,70 +176,60 @@ class AccountRepositoryImpl implements AccountRepository {
     required bool allowOrderNotifications,
     required bool allowGeneralNotifications,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await accountRemoteDataSource.setNotificationPreferences(
-          allowEmailNotifications: allowEmailNotifications,
-          allowOrderNotifications: allowOrderNotifications,
-          allowGeneralNotifications: allowGeneralNotifications,
-        );
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      await accountRemoteDataSource.setNotificationPreferences(
+        allowEmailNotifications: allowEmailNotifications,
+        allowOrderNotifications: allowOrderNotifications,
+        allowGeneralNotifications: allowGeneralNotifications,
+      );
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, Unit>> updateAddress(Address address) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final addressModel = AddressModel(
-          id: address.id,
-          name: address.name,
-          address: address.address,
-          city: address.city,
-          country: address.country,
-          number: address.number,
-          zip: address.zip,
-        );
-        await accountRemoteDataSource.updateAddress(addressModel);
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final addressModel = AddressModel(
+        id: address.id,
+        name: address.name,
+        address: address.address,
+        city: address.city,
+        country: address.country,
+        number: address.number,
+        zip: address.zip,
+        isDefault: address.isDefault,
+      );
+      await accountRemoteDataSource.updateAddress(addressModel);
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, Unit>> updateCreditCard(CreditCard card) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final cardModel = CreditCardModel(
-          id: card.id,
-          name: card.name,
-          cardNumber: card.cardNumber,
-          expiryDate: card.expiryDate,
-          cvv: card.cvv,
-          proccessor: card.proccessor,
-        );
-        await accountRemoteDataSource.updateCreditCard(cardModel);
-        return Right(unit);
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      final cardModel = CreditCardModel(
+        id: card.id,
+        name: card.name,
+        cardNumber: card.cardNumber,
+        expiryDate: card.expiryDate,
+        cvv: card.cvv,
+        proccessor: card.proccessor,
+        isDefault: card.isDefault,
+      );
+      await accountRemoteDataSource.updateCreditCard(cardModel);
+      return Right(unit);
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 
@@ -306,26 +242,22 @@ class AccountRepositoryImpl implements AccountRepository {
     required String newPassword1,
     required String newPassword2,
   }) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await accountRemoteDataSource.updateProfile(
-          name: name,
-          email: email,
-          phoneNumber: phoneNumber,
-          currentPassword: currentPassword,
-          newPassword1: newPassword1,
-          newPassword2: newPassword2,
-        );
-        return Right(unit);
-      } on WrongPasswordException {
-        return Left(WrongPasswordFailure());
-      } on NoInternetException {
-        return Left(NoInternetFailure());
-      } on EmptyCacheException {
-        return Left(EmptyCacheFailure());
-      }
-    } else {
+    try {
+      await accountRemoteDataSource.updateProfile(
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        currentPassword: currentPassword,
+        newPassword1: newPassword1,
+        newPassword2: newPassword2,
+      );
+      return Right(unit);
+    } on WrongPasswordException {
+      return Left(WrongPasswordFailure());
+    } on NoInternetException {
       return Left(NoInternetFailure());
+    } on EmptyCacheException {
+      return Left(EmptyCacheFailure());
     }
   }
 }

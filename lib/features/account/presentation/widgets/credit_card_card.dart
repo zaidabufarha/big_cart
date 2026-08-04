@@ -15,7 +15,6 @@ class CreditCardCard extends StatefulWidget {
 }
 
 class _CreditCardCardState extends State<CreditCardCard> {
-  late bool isDefault;
   bool isClosed = true;
 
   late String name;
@@ -25,7 +24,6 @@ class _CreditCardCardState extends State<CreditCardCard> {
 
   @override
   void initState() {
-    isDefault = widget.card.isDefault;
     name = widget.card.name;
     cardNumber = widget.card.cardNumber;
     expiration = widget.card.expiryDate;
@@ -43,7 +41,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
         spacing: 10.h,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          (isDefault)
+          (widget.card.isDefault)
               ? Container(
                   color: AppColors.primaryLight,
                   child: Text(
@@ -169,6 +167,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                     spacing: 5.h,
                     children: [
                       TextFormField(
+                        initialValue: name,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.backgroundSecondary,
@@ -203,11 +202,13 @@ class _CreditCardCardState extends State<CreditCardCard> {
                                   ? paymentProccessor.visa
                                   : paymentProccessor.mastercard,
                               id: widget.card.id,
+                              isDefault: widget.card.isDefault,
                             ),
                           );
                         },
                       ),
                       TextFormField(
+                        initialValue: cardNumber,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: AppColors.backgroundSecondary,
@@ -242,6 +243,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                                   ? paymentProccessor.visa
                                   : paymentProccessor.mastercard,
                               id: widget.card.id,
+                              isDefault: widget.card.isDefault,
                             ),
                           );
                         },
@@ -252,6 +254,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                         children: [
                           Expanded(
                             child: TextFormField(
+                              initialValue: expiration,
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: AppColors.backgroundSecondary,
@@ -286,6 +289,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                                         ? paymentProccessor.visa
                                         : paymentProccessor.mastercard,
                                     id: widget.card.id,
+                                    isDefault: widget.card.isDefault,
                                   ),
                                 );
                               },
@@ -293,6 +297,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              initialValue: cvv,
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: AppColors.backgroundSecondary,
@@ -327,6 +332,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                                         ? paymentProccessor.visa
                                         : paymentProccessor.mastercard,
                                     id: widget.card.id,
+                                    isDefault: widget.card.isDefault,
                                   ),
                                 );
                               },
@@ -342,7 +348,7 @@ class _CreditCardCardState extends State<CreditCardCard> {
                               alignment: Alignment.centerLeft,
                               scale: 0.8,
                               child: SwitchListTile(
-                                value: isDefault,
+                                value: widget.card.isDefault,
                                 title: Text(
                                   'Make default',
                                   style: Fonts.titleBold(),
@@ -354,15 +360,14 @@ class _CreditCardCardState extends State<CreditCardCard> {
                                   Colors.white,
                                 ),
                                 trackColor: WidgetStateProperty.all(
-                                  AppColors.primaryDark,
+                                  (widget.card.isDefault)
+                                      ? AppColors.primaryDark
+                                      : AppColors.textSecondary,
                                 ),
                                 dense: true,
                                 visualDensity: VisualDensity.compact,
                                 trackOutlineColor: WidgetStateColor.transparent,
                                 onChanged: (val) {
-                                  setState(() {
-                                    isDefault = val;
-                                  });
                                   widget.onChanged(
                                     CreditCard(
                                       name: name,

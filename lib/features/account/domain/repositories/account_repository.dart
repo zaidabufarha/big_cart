@@ -53,7 +53,6 @@ abstract class AccountRepository {
   });
 
   Future<Either<Failure, NotificationPreferences>> getNotificationPreferences();
-  Future<Either<Failure, Order>> getOrder(int orderId);
 
   Future<Either<Failure, List<Order>>> getOrders();
   Future<Either<Failure, List<Transaction>>> getTransactions();

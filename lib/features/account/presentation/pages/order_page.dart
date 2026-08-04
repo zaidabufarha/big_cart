@@ -72,14 +72,14 @@ class _OrderPageState extends State<OrderPage> {
                   spacing: 10.h,
                   children: [for (Order order in orders) OrderCard(order)],
                 ),
-                orElse: () => Center(
-                  child: CircularProgressIndicator(),
-                ),
                 error: (message) => Center(
                   child: Text(
                     message,
                     style: Fonts.titleBold(),
                   ),
+                ),
+                orElse: () => Center(
+                  child: CircularProgressIndicator(),
                 ),
               );
             },

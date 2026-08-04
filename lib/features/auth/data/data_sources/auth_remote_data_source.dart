@@ -56,11 +56,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     try {
       final response = await apiConsumer.get(
-        path: 'users/${cleanEmail(email)}.json',
+        path: 'users/${cleanEmail(email)}/user_details.json',
       );
+
       if (response.data == null) {
         throw InvalidEmailException();
       } else if (response.data['password'] != password) {
+        print(
+          'correct password is ${response.data['password']} but you entered $password',
+        );
         throw WrongPasswordException();
       } else {
         final userData = Map<String, dynamic>.from(response.data);
@@ -90,8 +94,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
     required String number,
   }) async {
-    // TODO: implement signUp
-    throw UnimplementedError();
+    final user = UserModel(
+      name: 'User',
+      email: email,
+      number: number,
+      password: password,
+    );
+    try {
+      final response = await apiConsumer.get(
+        path: 'users/${cleanEmail(email)}.json',
+      );
+      if (response.data != null) {
+        throw InvalidEmailException();
+      } else {
+        await apiConsumer.put(
+          path: 'users/${cleanEmail(email)}/user_details.json',
+          data: user.toJson(),
+        );
+
+        return user;
+      }
+    } on DioException {
+      throw NoInternetException();
+    }
   }
 
   @override

@@ -25,22 +25,24 @@ class ProductModel extends Product {
   });
 
   factory ProductModel.fromEntity(Product entity) => ProductModel(
-        id: entity.id,
-        name: entity.name,
-        imagePath: entity.imagePath,
-        amount: entity.amount,
-        description: entity.description,
-        discount: entity.discount,
-        price: entity.price,
-        isNew: entity.isNew,
-        isFavorite: entity.isFavorite,
-        category: entity.category,
-        color: entity.color,
-        reviewList: entity.reviewList,
-      );
+    id: entity.id,
+    name: entity.name,
+    imagePath: entity.imagePath,
+    amount: entity.amount,
+    description: entity.description,
+    discount: entity.discount,
+    price: entity.price,
+    isNew: entity.isNew,
+    isFavorite: entity.isFavorite,
+    category: entity.category,
+    color: entity.color,
+    reviewList: entity.reviewList,
+  );
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) =>
-      _$ProductModelFromJson(json);
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    json['reviewList'] ??= [];
+    return _$ProductModelFromJson(json);
+  }
 
   Map<String, dynamic> toJson() => _$ProductModelToJson(this);
 }

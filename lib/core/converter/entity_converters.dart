@@ -35,7 +35,7 @@ class AddressConverter
   Address fromJson(Map<String, dynamic> json) => AddressModel.fromJson(json);
   @override
   Map<String, dynamic> toJson(Address object) =>
-      (object as AddressModel).toJson();
+      AddressModel.fromEntity(object).toJson();
 }
 
 class CreditCardConverter
@@ -46,7 +46,7 @@ class CreditCardConverter
       CreditCardModel.fromJson(json);
   @override
   Map<String, dynamic> toJson(CreditCard object) =>
-      (object as CreditCardModel).toJson();
+      CreditCardModel.fromEntity(object).toJson();
 }
 
 class OrderConverter implements JsonConverter<Order, Map<String, dynamic>> {

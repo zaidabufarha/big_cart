@@ -56,7 +56,6 @@ abstract class AccountRemoteDataSource {
   });
 
   Future<NotificationPreferencesModel> getNotificationPreferences();
-  Future<OrderModel> getOrder(int orderId);
   Future<List<OrderModel>> getOrders();
   Future<List<TransactionModel>> getTransactions();
 }
@@ -102,15 +101,25 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       country: country,
       number: phoneNumber,
       zip: zip,
+      isDefault: makeDefault,
     );
     try {
+      if (makeDefault) {
+        final existing = await getAddresses();
+        for (final item in existing) {
+          if (item.isDefault) {
+            item.isDefault = false;
+            await updateAddress(item);
+          }
+        }
+      }
       final addressesPath = await _getUserPath('addresses.json');
       await apiConsumer.post(path: addressesPath, data: output.toJson());
       if (makeDefault) {
-        final defaultAddressPath = await _getUserPath('defaultAddress.json');
+        final defaultAddressPath = await _getUserPath('user_details.json');
         await apiConsumer.patch(
           path: defaultAddressPath,
-          data: output.toJson(),
+          data: {'defaultAddress': output.toJson()},
         );
       }
     } on DioException {
@@ -128,15 +137,32 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
     required paymentProccessor proccessor,
   }) async {
     try {
+      if (saveCard) {
+        final existing = await getCreditCards();
+        for (final item in existing) {
+          if (item.isDefault) {
+            item.isDefault = false;
+            await updateCreditCard(item);
+          }
+        }
+      }
       final output = CreditCardModel(
         name: name,
         cardNumber: cardNumber,
         expiryDate: expiration,
         cvv: cvv,
         proccessor: proccessor,
+        isDefault: saveCard,
       );
       final creditCardPath = await _getUserPath('credit_cards.json');
       await apiConsumer.post(path: creditCardPath, data: output.toJson());
+      if (saveCard) {
+        final userPath = await _getUserPath('user_details.json');
+        await apiConsumer.patch(
+          path: userPath,
+          data: {'defaultCreditCard': output.toJson()},
+        );
+      }
     } on DioException {
       throw NoInternetException();
     }
@@ -145,12 +171,13 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<void> addProfilePicture({required String path}) async {
     //to send a file i used multipartfile
-    final formData = FormData.fromMap({
-      'profile_picture': await MultipartFile.fromFile(path),
-    });
-    final profilePicturePath = await _getUserPath('profile_picture.json');
+
+    final userPath = await _getUserPath('user_details.json');
     try {
-      await apiConsumer.patch(path: profilePicturePath, data: formData);
+      await apiConsumer.patch(
+        path: userPath,
+        data: {'imagePath': path},
+      );
     } on DioException {
       throw NoInternetException();
     }
@@ -203,27 +230,14 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
         'notification_preferences.json',
       );
       final response = await apiConsumer.get(path: notificationPrefsPath);
-      return NotificationPreferencesModel.fromJson(response);
-    } on DioException {
-      throw NoInternetException();
-    }
-  }
-
-  @override
-  Future<OrderModel> getOrder(int orderId) async {
-    try {
-      final orderPath = await _getUserPath('orders.json');
-      final response = await apiConsumer.get(path: orderPath);
       if (response.data == null) {
-        throw NoDataException();
+        return NotificationPreferencesModel(
+          allowEmail: true,
+          allowGeneral: true,
+          allowOrder: true,
+        );
       }
-      for (dynamic order in response.data.values) {
-        final temp = OrderModel.fromJson(order);
-        if (temp.id == orderId) {
-          return temp;
-        }
-      }
-      throw NoInternetException();
+      return NotificationPreferencesModel.fromJson(response.data);
     } on DioException {
       throw NoInternetException();
     }
@@ -236,10 +250,13 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       final orderPath = await _getUserPath('orders.json');
       final response = await apiConsumer.get(path: orderPath);
       if (response.data == null) {
-        throw NoDataException();
+        return [];
       }
+      int counter = 1;
       for (dynamic order in response.data.values) {
-        list.add(OrderModel.fromJson(order));
+        OrderModel orderModel = OrderModel.fromJson(order);
+        orderModel.id ??= counter++;
+        list.add(orderModel);
       }
       return list;
     } on DioException {
@@ -254,7 +271,7 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
       final transactionPath = await _getUserPath('transactions.json');
       final response = await apiConsumer.get(path: transactionPath);
       if (response.data == null) {
-        throw NoDataException();
+        return [];
       }
       for (dynamic transaction in response.data.values) {
         list.add(TransactionModel.fromJson(transaction));
@@ -268,9 +285,9 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<UserModel> getUserData() async {
     try {
-      final userPath = await _getUserPath('user_data.json');
+      final userPath = await _getUserPath('user_details.json');
       final response = await apiConsumer.get(path: userPath);
-      return UserModel.fromJson(response);
+      return UserModel.fromJson(response.data);
     } on DioException {
       throw NoInternetException();
     }
@@ -305,6 +322,13 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
     try {
       final addressPath = await _getUserPath('addresses/${address.id}.json');
       await apiConsumer.patch(path: addressPath, data: address.toJson());
+      if (address.isDefault) {
+        final userPath = await _getUserPath('user_details.json');
+        await apiConsumer.patch(
+          path: userPath,
+          data: {'defaultAddress': address.toJson()},
+        );
+      }
     } on DioException {
       throw NoInternetException();
     }
@@ -315,6 +339,13 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
     try {
       final creditCardPath = await _getUserPath('credit_cards/${card.id}.json');
       await apiConsumer.patch(path: creditCardPath, data: card.toJson());
+      if (card.isDefault) {
+        final userPath = await _getUserPath('user_details.json');
+        await apiConsumer.patch(
+          path: userPath,
+          data: {'defaultCreditCard': card.toJson()},
+        );
+      }
     } on DioException {
       throw NoInternetException();
     }
@@ -325,26 +356,32 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
     required String name,
     required String email,
     required String phoneNumber,
-    required String currentPassword,
-    required String newPassword1,
-    required String newPassword2,
+    String? currentPassword,
+    String? newPassword1,
+    String? newPassword2,
   }) async {
-    final userPath = await _getUserPath('user_data.json');
+    final userPath = await _getUserPath('user_details.json');
     try {
-      //first i check password correctness
-
       final response = await apiConsumer.get(path: userPath);
-      UserModel tempUser = UserModel.fromJson(response);
-      if (currentPassword == tempUser.password) {
-        tempUser.name = name;
-        tempUser.email = email;
-        tempUser.number = phoneNumber;
-        tempUser.password = newPassword1;
+      UserModel tempUser = UserModel.fromJson(response.data);
+      if (currentPassword != null && currentPassword.isNotEmpty) {
+        //first i check password correctness
+        if (currentPassword != tempUser.password) {
+          throw WrongPasswordException();
+        }
       } else {
-        throw WrongPasswordException();
+        newPassword1 = tempUser.password;
       }
 
-      await apiConsumer.patch(path: userPath, data: tempUser.toJson());
+      await apiConsumer.patch(
+        path: userPath,
+        data: {
+          'name': name,
+          'email': email,
+          'number': phoneNumber,
+          'password': newPassword1!,
+        },
+      );
     } on DioException {
       throw NoInternetException();
     }

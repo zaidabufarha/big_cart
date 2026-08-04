@@ -28,20 +28,25 @@ class UserModel extends User {
   });
 
   factory UserModel.fromEntity(User entity) => UserModel(
-        name: entity.name,
-        email: entity.email,
-        number: entity.number,
-        password: entity.password,
-        imagePath: entity.imagePath,
-        defaultAddress: entity.defaultAddress,
-        creditCardList: entity.creditCardList,
-        addressList: entity.addressList,
-        orderList: entity.orderList,
-        transactionList: entity.transactionList,
-      );
+    name: entity.name,
+    email: entity.email,
+    number: entity.number,
+    password: entity.password,
+    imagePath: entity.imagePath,
+    defaultAddress: entity.defaultAddress,
+    creditCardList: entity.creditCardList,
+    addressList: entity.addressList,
+    orderList: entity.orderList,
+    transactionList: entity.transactionList,
+  );
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    json['creditCardList'] ??= [];
+    json['addressList'] ??= [];
+    json['orderList'] ??= [];
+    json['transactionList'] ??= [];
+    return _$UserModelFromJson(json);
+  }
 
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }
