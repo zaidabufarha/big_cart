@@ -8,6 +8,7 @@ import 'package:big_cart/features/buy/presentation/cubit/cubit/shop_cubit.dart';
 import 'package:big_cart/features/buy/presentation/pages/cart_page.dart';
 import 'package:big_cart/features/buy/presentation/pages/category_list_page.dart';
 import 'package:big_cart/features/buy/presentation/pages/category_page.dart';
+import 'package:big_cart/features/buy/presentation/pages/search_page.dart';
 import 'package:big_cart/features/buy/presentation/widgets/category_icon.dart';
 import 'package:big_cart/features/buy/presentation/widgets/product_list.dart';
 import 'package:flutter/material.dart';
@@ -215,6 +216,15 @@ class _HomePageState extends State<HomePage> {
                     spacing: 10.h,
                     children: [
                       TextField(
+                        readOnly:
+                            true, // i dont really need the text functionality here because theres a seperate search page
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SearchPage(),
+                            ),
+                          );
+                        },
                         decoration: InputDecoration(
                           fillColor: AppColors.backgroundSecondary,
                           filled: true,
